@@ -7,25 +7,25 @@ namespace FizzSDK
 {
     public class PrefabPivotFixer : EditorWindow
     {
-        private GameObject prefabTarget;
-        const string meshDirectory = "Assets/Resources/FixedMeshes";
+        private GameObject _prefabTarget;
+        private const string MeshDirectory = "Assets/Resources/FixedMeshes";
 
         //[MenuItem("Tools/Prefab Pivot Fixer")]
         public static void ShowWindow()
         {
-            EditorWindow window = GetWindow(typeof(PrefabPivotFixer));
+            var window = GetWindow(typeof(PrefabPivotFixer));
             window.titleContent = new GUIContent("Prefab Pivot Fixer");
             window.Show();
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             GUILayout.Label("Choose a prefab file to modify", EditorStyles.boldLabel);
-            prefabTarget = (GameObject)EditorGUILayout.ObjectField("Prefab", prefabTarget, typeof(GameObject), false);
+            _prefabTarget = (GameObject)EditorGUILayout.ObjectField("Prefab", _prefabTarget, typeof(GameObject), false);
 
             if (GUILayout.Button("Fix meshes"))
             {
-                string prefabPath = AssetDatabase.GetAssetPath(prefabTarget);
+                var prefabPath = AssetDatabase.GetAssetPath(_prefabTarget);
                 ResetPivot(prefabPath);
             }
         }
@@ -39,7 +39,7 @@ namespace FizzSDK
                 AssetDatabase.CreateFolder("Assets", "Resources");
             }
 
-            if (!AssetDatabase.IsValidFolder(meshDirectory))
+            if (!AssetDatabase.IsValidFolder(MeshDirectory))
             {
                 AssetDatabase.CreateFolder("Assets/Resources", "FixedMeshes");
             }
@@ -47,14 +47,14 @@ namespace FizzSDK
 
         private void RecenterPivot(GameObject obj)
         {
-            MeshFilter meshFilter = obj.GetComponent<MeshFilter>();
+            var meshFilter = obj.GetComponent<MeshFilter>();
             if (meshFilter == null || meshFilter.sharedMesh == null)
             {
                 Debug.LogWarning("No mesh filter or mesh found on object: " + obj.name);
                 return;
             }
 
-            Vector3 oldScale = obj.transform.localScale;
+            var oldScale = obj.transform.localScale;
 
             if (!obj.TryGetComponent<MeshRenderer>(out var _))
             {
@@ -72,17 +72,17 @@ namespace FizzSDK
                 sphereCollider.center = Vector3.zero;
             }
 
-            Mesh oldMesh = meshFilter.sharedMesh;
+            var oldMesh = meshFilter.sharedMesh;
             Mesh modifiedMesh = new()
             {
                 vertices = oldMesh.vertices
             };
 
-            Vector3 center = modifiedMesh.bounds.center;
-            Vector3 offset = center - obj.transform.localPosition;
+            var center = modifiedMesh.bounds.center;
+            var offset = center - obj.transform.localPosition;
 
-            Vector3[] vertices = modifiedMesh.vertices;
-            for (int i = 0; i < vertices.Length; i++)
+            var vertices = modifiedMesh.vertices;
+            for (var i = 0; i < vertices.Length; i++)
             {
                 vertices[i] -= offset;
             }
@@ -90,7 +90,7 @@ namespace FizzSDK
             modifiedMesh.vertices = vertices;
             modifiedMesh.RecalculateBounds();
 
-            string meshFilePath = $"{meshDirectory}/{meshFilter.transform.name}.asset";
+            var meshFilePath = $"{MeshDirectory}/{meshFilter.transform.name}.asset";
             AssetDatabase.CreateAsset(modifiedMesh, meshFilePath);
 
             Undo.RecordObject(obj.transform, "Fix transform");
@@ -107,20 +107,20 @@ namespace FizzSDK
 
         private void ResetPivot(string prefabPath)
         {
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
             if (prefab == null)
             {
                 Debug.LogError("Failed to load prefab file at path: " + prefabPath);
                 return;
             }
 
-            GameObject prefabInstance = Instantiate(prefab);
+            var prefabInstance = Instantiate(prefab);
             prefabInstance.name = prefab.name;
-            MeshFilter[] meshFilters = prefabInstance.GetComponentsInChildren<MeshFilter>();
+            var meshFilters = prefabInstance.GetComponentsInChildren<MeshFilter>();
 
             CreateMeshDirectoryIfDoesntExist();
 
-            foreach (MeshFilter meshFilter in meshFilters)
+            foreach (var meshFilter in meshFilters)
             {
                 RecenterPivot(meshFilter.gameObject);
             }

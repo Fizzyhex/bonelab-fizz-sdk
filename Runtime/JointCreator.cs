@@ -11,46 +11,46 @@ namespace FizzSDK
 {
     public class JointCreator : MonoBehaviour, IJointScript
     {
-        [SerializeField] List<GameObject> rigidbodyContainers;
-        [SerializeField] List<Rigidbody> rigidbodies;
-
+        [SerializeField] private List<GameObject> rigidbodyContainers;
+        [SerializeField] private List<Rigidbody> rigidbodies;
+        
         [Header("Options")]
         [Tooltip("If checked, new joints will be added in play mode")]
-        [SerializeField] bool createAtRuntime = false;
+        [SerializeField]
+        private bool createAtRuntime = false;
 
         [Header("Configurable Joint Settings")]
-        [SerializeField] float breakForce = Mathf.Infinity;
-        [SerializeField] float breakTorque = Mathf.Infinity;
+        [SerializeField]
+        private float breakForce = Mathf.Infinity;
+        [SerializeField] private float breakTorque = Mathf.Infinity;
 
-        const float searchPadding = 0.1f;
+        private readonly Collider[] _overlapResults = new Collider[10];
+
+        private const float SearchPadding = 0.1f;
 
         // Get the bounds of a GameObject including its children
         private Bounds GetBounds(GameObject obj)
         {
-            Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
+            var renderers = obj.GetComponentsInChildren<Renderer>();
             Bounds bounds = new();
 
-            foreach (Renderer renderer in renderers)
+            foreach (var rendererMatch in renderers)
             {
-                bounds.Encapsulate(renderer.bounds);
+                bounds.Encapsulate(rendererMatch.bounds);
             }
 
             return bounds;
         }
 
-        List<Rigidbody> GetAllRigidbodies()
+        private List<Rigidbody> GetAllRigidbodies()
         {
-            List<Rigidbody> allRbs = SearchUtils.FindAllInContainers<Rigidbody>(rigidbodyContainers);
+            var foundRigidbodies = SearchUtils.FindAllInContainers<Rigidbody>(rigidbodyContainers);
+            foundRigidbodies.AddRange(rigidbodies);
 
-            foreach (Rigidbody rigidbody in rigidbodies)
-            {
-                allRbs.Add(rigidbody);
-            }
-
-            return allRbs;
+            return foundRigidbodies;
         }
 
-        void ConfigureJoint(ConfigurableJoint joint)
+        private void ConfigureJoint(ConfigurableJoint joint)
         {
             joint.xMotion = ConfigurableJointMotion.Locked;
             joint.yMotion = ConfigurableJointMotion.Locked;
@@ -63,13 +63,13 @@ namespace FizzSDK
             joint.breakTorque = breakTorque;
         }
 
-        List<GameObject> GetRootGameObjects(List<Rigidbody> rbs)
+        private List<GameObject> GetRootGameObjects(List<Rigidbody> rbs)
         {
             List<GameObject> rootGameObjects = new();
 
-            foreach (Rigidbody rb in rbs)
+            foreach (var rb in rbs)
             {
-                GameObject rootGameObject = rb.gameObject.transform.root.gameObject;
+                var rootGameObject = rb.gameObject.transform.root.gameObject;
 
                 if (!rootGameObjects.Contains(rootGameObject))
                 {
@@ -82,13 +82,13 @@ namespace FizzSDK
 
         public void MakeJoints()
         {
-            string actionGuid = System.Guid.NewGuid().ToString();
-            List<Rigidbody> allRbs = GetAllRigidbodies();
-            List<GameObject> rootGameObjects = allRbs.Select(rb => rb.gameObject.transform.root.gameObject).ToList();
+            var actionGuid = System.Guid.NewGuid().ToString();
+            var allRigidbodies = GetAllRigidbodies();
+            var rootGameObjects = allRigidbodies.Select(rb => rb.gameObject.transform.root.gameObject).ToList();
 
-            foreach (Rigidbody rb in allRbs)
+            foreach (var rb in allRigidbodies)
             {
-                GameObject rootGameObject = rb.gameObject.transform.root.gameObject;
+                var rootGameObject = rb.gameObject.transform.root.gameObject;
 
                 if (!rootGameObjects.Contains(rootGameObject))
                 {
@@ -96,15 +96,15 @@ namespace FizzSDK
                 }
             }
 
-            Debug.Log("RBS: " + allRbs.Count);
+            Debug.Log("RBS: " + allRigidbodies.Count);
 
-            foreach (Rigidbody rb in allRbs)
+            foreach (var rb in allRigidbodies)
             {
-                Collider collider = rb.gameObject.GetComponent<Collider>();
-                Vector3 searchRadius = (collider.bounds.size / 2) + new Vector3(searchPadding, searchPadding, searchPadding);
-                Collider[] hitColliders = Physics.OverlapBox(rb.worldCenterOfMass, searchRadius);
+                var rbCollider = rb.gameObject.GetComponent<Collider>();
+                var searchRadius = (rbCollider.bounds.size / 2) + new Vector3(SearchPadding, SearchPadding, SearchPadding);
+                Physics.OverlapBoxNonAlloc(rb.worldCenterOfMass, searchRadius, _overlapResults);
 
-                foreach (Collider hitCollider in hitColliders)
+                foreach (var hitCollider in _overlapResults)
                 {
                     if (hitCollider.gameObject == rb.gameObject)
                     {
@@ -116,13 +116,13 @@ namespace FizzSDK
                         continue;
                     }
 
-                    ConfigurableJoint joint = rb.gameObject.AddComponent<ConfigurableJoint>();
+                    var joint = rb.gameObject.AddComponent<ConfigurableJoint>();
 
                     joint.anchor = rb.transform.InverseTransformPoint(hitCollider.ClosestPoint(rb.worldCenterOfMass));
                     joint.axis = Vector3.zero;
                     joint.connectedBody = hitRigidbody;
 
-                    JointConnections jointConnections = hitRigidbody.GetComponent<JointConnections>();
+                    var jointConnections = hitRigidbody.GetComponent<JointConnections>();
 
                     if (jointConnections)
                     {
@@ -139,7 +139,7 @@ namespace FizzSDK
 
                     jointConnections.joints.Add(joint);
 
-                    Physics.IgnoreCollision(collider, hitCollider);
+                    Physics.IgnoreCollision(rbCollider, hitCollider);
 
                     EditorUtility.SetDirty(joint);
 
@@ -150,7 +150,7 @@ namespace FizzSDK
             }
         }
 
-        void Awake()
+        private void Awake()
         {
             if (createAtRuntime)
             {

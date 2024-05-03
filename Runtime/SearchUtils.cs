@@ -10,7 +10,7 @@ namespace FizzSDK.Utils
         {
             List<T> matches = new();
 
-            foreach (GameObject container in containers)
+            foreach (var container in containers)
             {
                 matches.AddRange(container.GetComponentsInChildren<T>());
             }
@@ -22,9 +22,9 @@ namespace FizzSDK.Utils
         {
             List<GameObject> rootGameObjects = new();
 
-            foreach (GameObject gameObject in gameObjects)
+            foreach (var gameObject in gameObjects)
             {
-                GameObject rootGameObject = gameObject.transform.root.gameObject;
+                var rootGameObject = gameObject.transform.root.gameObject;
 
                 if (!rootGameObjects.Contains(rootGameObject))
                 {

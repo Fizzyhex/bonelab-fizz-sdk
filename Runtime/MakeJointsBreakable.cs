@@ -10,45 +10,43 @@ using SLZ.Bonelab;
 
 using UnityEditor;
 using FizzSDK.Utils;
+using UnityEngine.Serialization;
 
 namespace FizzSDK
 {
     public class MakeJointsBreakable : MonoBehaviour, IJointScript
     {
-        [SerializeField] GameObject[] rigidbodyContainers;
-        [SerializeField] Rigidbody[] rigidbodies;
+        [SerializeField] private GameObject[] rigidbodyContainers;
+        [FormerlySerializedAs("rigidbodies")] [SerializeField] private Rigidbody[] targetRigidbodies;
 
         [Header("Options")]
         [Tooltip("If checked, the components will be added in play mode")]
-        [SerializeField] bool createAtRuntime = false;
+        [SerializeField]
+        private bool createAtRuntime = false;
 
         [Header("Prop Health")]
         public int maxHealth = 100;
         public AttackType attackType = AttackType.Blunt;
         public float attackTypeDamage = 0.75f;
 
-        Rigidbody[] GetAllRigidbodies()
+        private Rigidbody[] GetAllRigidbodies()
         {
             List<Rigidbody> allRbs = new();
 
-            foreach (GameObject rigidbodyContainer in rigidbodyContainers)
+            foreach (var rigidbodyContainer in rigidbodyContainers)
             {
                 allRbs.AddRange(rigidbodyContainer.GetComponentsInChildren<Rigidbody>());
             }
 
-            foreach (Rigidbody rigidbody in rigidbodies)
-            {
-                allRbs.Add(rigidbody);
-            }
-
+            allRbs.AddRange(targetRigidbodies);
             return allRbs.ToArray();
         }
 
         public void MakeJoints()
         {
-            Rigidbody[] allRbs = GetAllRigidbodies();
+            var allRbs = GetAllRigidbodies();
 
-            foreach (Rigidbody rb in allRbs)
+            foreach (var rb in allRbs)
             {
                 
                 if (!rb.gameObject.TryGetComponent<JointConnections>(out var jointConnections))
@@ -56,17 +54,17 @@ namespace FizzSDK
                     continue;
                 }
 
-                foreach (Joint connectedJoint in jointConnections.joints)
+                foreach (var connectedJoint in jointConnections.joints)
                 {
                     if (connectedJoint is ConfigurableJoint connectedConfigJoint)
                     {
-                        ConfigJointExtendedEvents configJointExtendedEvents =
+                        var configJointExtendedEvents =
                             rb.gameObject.AddComponent<ConfigJointExtendedEvents>();
 
                         configJointExtendedEvents.joint = connectedConfigJoint;
 
-                        UltEventHolder ultEventHolder =
-                            ComponentUtils.AddOrGetComponent<UltEventHolder>(rb.gameObject);
+                        var ultEventHolder =
+                            rb.gameObject.AddOrGetComponent<UltEventHolder>();
 
                         UnityAction action = configJointExtendedEvents.SetAllFree;
                         ultEventHolder.Event.AddPersistentCall(action);
@@ -80,7 +78,7 @@ namespace FizzSDK
                 }
             }
 
-            foreach (Rigidbody rb in allRbs)
+            foreach (var rb in allRbs)
             {
                 ComponentUtils.AddOrGetComponent<Prop_DamageReceiver>(rb.gameObject);
 
@@ -92,8 +90,9 @@ namespace FizzSDK
                     propHealth.max_Health = maxHealth;
 
                     // set private cur_health field using reflection
-                    var curHealthField = typeof(Prop_Health).GetField("cur_Health", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    curHealthField.SetValue(propHealth, maxHealth);
+                    var curHealthField = typeof(Prop_Health).GetField("cur_Health",
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (curHealthField != null) curHealthField.SetValue(propHealth, maxHealth);
 
                     propHealth.mod_Type = attackType;
                     propHealth.mod_TypeDamage = attackTypeDamage;
@@ -116,7 +115,7 @@ namespace FizzSDK
             }
         }
 
-        void Start()
+        private void Start()
         {
             if (createAtRuntime)
             {

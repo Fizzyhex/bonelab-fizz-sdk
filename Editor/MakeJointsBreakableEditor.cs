@@ -11,11 +11,11 @@ namespace FizzSDK
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-            MakeJointsBreakable myScript = (MakeJointsBreakable)target;
+            var myScript = (MakeJointsBreakable)target;
 
             if (GUILayout.Button("Add Components!"))
             {
-                bool dialogAccepted = EditorUtility.DisplayDialog(
+                var dialogAccepted = EditorUtility.DisplayDialog(
                     "Add Components",
                     "This operation is irreversible - you may want to make a copy of your objects. Continue?",
                     "Yes",

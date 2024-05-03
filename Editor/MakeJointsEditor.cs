@@ -12,21 +12,20 @@ namespace FizzSDK
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-            JointCreator myScript = (JointCreator)target;
+            var myScript = (JointCreator)target;
 
-            if (GUILayout.Button("Create Joints!"))
+            if (!GUILayout.Button("Create Joints!")) return;
+
+            var dialogAccepted = EditorUtility.DisplayDialog(
+                "Create Joints",
+                "This operation is irreversible - you may want to make a copy of your objects. Continue?",
+                "Yes",
+                "No"
+            );
+
+            if (dialogAccepted)
             {
-                bool dialogAccepted = EditorUtility.DisplayDialog(
-                    "Create Joints",
-                    "This operation is irreversible - you may want to make a copy of your objects. Continue?",
-                    "Yes",
-                    "No"
-                );
-
-                if (dialogAccepted)
-                {
-                    myScript.MakeJoints();
-                }
+                myScript.MakeJoints();
             }
         }
     }

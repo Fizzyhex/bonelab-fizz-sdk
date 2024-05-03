@@ -7,18 +7,18 @@ namespace FizzSDK
 {
     public class JointConnections : MonoBehaviour
     {
-        private string lastUpdateId;
+        private string _lastUpdateId;
         [Tooltip("A list of joints that are connected to this object - this is automatically filled out by MakeJoints")]
         public List<Joint> joints = new();
 
         public string GetUpdateId()
         {
-            return lastUpdateId;
+            return _lastUpdateId;
         }
 
         public void SetUpdateId(string guid)
         {
-            lastUpdateId = guid;
+            _lastUpdateId = guid;
         }
     }
 }
