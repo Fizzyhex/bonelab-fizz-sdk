@@ -1,0 +1,23 @@
+name: Create Unity Package
+
+on: push
+
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        echo "/" > metaList
+        find / -name \*.meta >> metaList
+
+    - run: mkdir output
+
+    - uses: pCYSl5EDgo/create-unitypackage@master
+      with:
+        package-path: 'output/output.unitypackage'
+        include-files: metaList
+    - uses: actions/upload-artifact@master
+      with:
+        path: output
+        name: package
