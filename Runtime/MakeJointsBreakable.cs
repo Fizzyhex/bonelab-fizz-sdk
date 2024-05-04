@@ -1,9 +1,10 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
-using UltEvents;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using SLZ.Props;
+using UltEvents;
 using SLZ.Marrow.Data;
 using UnityEditor.Events;
 using SLZ.Bonelab;
@@ -44,25 +45,22 @@ namespace FizzSDK
             return allRbs.ToArray();
         }
 
-        private static void AddJointDeleter(GameObject target)
+        private static void AddJointDeleter(GameObject holder, GameObject jointSource)
         {
-            var joint = target.GetComponent<ConfigurableJoint>();
+            var joints = jointSource.GetComponents<ConfigurableJoint>();
+            var ultEventHolder = holder.AddOrGetComponent<UltEventHolder>();
 
-            if (!joint)
+            foreach (var joint in joints)
             {
-                return;
+                var configJointExtendedEventsSelf = holder.AddComponent<ConfigJointExtendedEvents>();
+                configJointExtendedEventsSelf.joint = joint;
+                UnityAction action = configJointExtendedEventsSelf.SetAllFree;
+                ultEventHolder.Event.AddPersistentCall(action);
+#if UNITY_EDITOR
+                EditorUtility.SetDirty(ultEventHolder);
+                EditorUtility.SetDirty(configJointExtendedEventsSelf);
+#endif
             }
-            
-            var configJointExtendedEventsSelf =
-                target.AddComponent<ConfigJointExtendedEvents>();
-            
-            configJointExtendedEventsSelf.joint = joint;
-            
-            var ultEventHolder =
-                target.AddOrGetComponent<UltEventHolder>();
-            
-            UnityAction action = configJointExtendedEventsSelf.SetAllFree;
-            ultEventHolder.Event.AddPersistentCall(action);
         }
 
         public void MakeJoints()
@@ -71,35 +69,59 @@ namespace FizzSDK
 
             foreach (var rb in allRbs)
             {
-                
                 if (!rb.gameObject.TryGetComponent<JointConnections>(out var jointConnections))
                 {
                     continue;
                 }
-
-                AddJointDeleter(rb.gameObject);
-
-                foreach (var connectedJoint in jointConnections.joints)
+                
+                var jointsToBreak = rb.gameObject.GetComponents<ConfigurableJoint>().ToList();
+                
+                foreach (var joint in jointConnections.joints)
                 {
-                    if (connectedJoint is ConfigurableJoint connectedConfigJoint)
+                    if (joint is ConfigurableJoint configJoint)
                     {
-                        var configJointExtendedEvents =
-                            rb.gameObject.AddComponent<ConfigJointExtendedEvents>();
-                        configJointExtendedEvents.joint = connectedConfigJoint;
-
-                        var ultEventHolder =
-                            rb.gameObject.AddOrGetComponent<UltEventHolder>();
-
-                        UnityAction action = configJointExtendedEvents.SetAllFree;
-                        ultEventHolder.Event.AddPersistentCall(action);
-
-                        #if UNITY_EDITOR
-                        // We would need to use https://docs.unity3d.com/ScriptReference/Undo.RecordObject.html to support undo
-                        EditorUtility.SetDirty(ultEventHolder);
-                        EditorUtility.SetDirty(configJointExtendedEvents);
-                        #endif
+                        jointsToBreak.Add(configJoint);
                     }
                 }
+                
+                var ultEventHolder = rb.gameObject.AddOrGetComponent<UltEventHolder>();
+
+                foreach (var joint in jointsToBreak)
+                {
+                    var configJointExtendedEvents = rb.gameObject.AddComponent<ConfigJointExtendedEvents>();
+                    configJointExtendedEvents.joint = joint;
+                    UnityAction action = configJointExtendedEvents.SetAllFree;
+                    ultEventHolder.Event.AddPersistentCall(action);
+                }
+
+                // AddJointDeleter(rb.gameObject, rb.gameObject);
+                //
+                // foreach (var connectedJoint in jointConnections.joints)
+                // {
+                //     AddJointDeleter(rb.gameObject, connectedJoint.gameObject);
+                // }
+                
+                // foreach (var connectedJoint in jointConnections.joints)
+                // {
+                //     if (connectedJoint is ConfigurableJoint connectedConfigJoint)
+                //     {
+                //         var configJointExtendedEvents =
+                //             rb.gameObject.AddComponent<ConfigJointExtendedEvents>();
+                //         configJointExtendedEvents.joint = connectedConfigJoint;
+                //
+                //         var ultEventHolder =
+                //             rb.gameObject.AddOrGetComponent<UltEventHolder>();
+                //
+                //         UnityAction action = configJointExtendedEvents.SetAllFree;
+                //         ultEventHolder.Event.AddPersistentCall(action);
+                //
+                //         #if UNITY_EDITOR
+                //         // We would need to use https://docs.unity3d.com/ScriptReference/Undo.RecordObject.html to support undo
+                //         EditorUtility.SetDirty(ultEventHolder);
+                //         EditorUtility.SetDirty(configJointExtendedEvents);
+                //         #endif
+                //     }
+                // }
             }
 
             foreach (var rb in allRbs)
@@ -112,6 +134,11 @@ namespace FizzSDK
                     propHealth.RESETABLE = true;
                     propHealth.Pooled = true;
                     propHealth.max_Health = maxHealth;
+                    propHealth.damageFromAttack = true;
+                    propHealth.damageFromImpact = true;
+                    propHealth.mod_Attack = 1;
+                    propHealth.mod_Impact = 1;
+                    propHealth.thr_Impact = 1;
 
                     // set private cur_health field using reflection
                     var curHealthField = typeof(Prop_Health).GetField("cur_Health",
