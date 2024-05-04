@@ -10,10 +10,12 @@ using SLZ.Bonelab;
 
 using UnityEditor;
 using FizzSDK.Utils;
+using Unity.VisualScripting;
 using UnityEngine.Serialization;
 
 namespace FizzSDK
 {
+    [AddComponentMenu("FizzSDK/Make Joints Breakable")]
     public class MakeJointsBreakable : MonoBehaviour, IJointScript
     {
         [SerializeField] private GameObject[] rigidbodyContainers;
@@ -42,6 +44,27 @@ namespace FizzSDK
             return allRbs.ToArray();
         }
 
+        private static void AddJointDeleter(GameObject target)
+        {
+            var joint = target.GetComponent<ConfigurableJoint>();
+
+            if (!joint)
+            {
+                return;
+            }
+            
+            var configJointExtendedEventsSelf =
+                target.AddComponent<ConfigJointExtendedEvents>();
+            
+            configJointExtendedEventsSelf.joint = joint;
+            
+            var ultEventHolder =
+                target.AddOrGetComponent<UltEventHolder>();
+            
+            UnityAction action = configJointExtendedEventsSelf.SetAllFree;
+            ultEventHolder.Event.AddPersistentCall(action);
+        }
+
         public void MakeJoints()
         {
             var allRbs = GetAllRigidbodies();
@@ -54,13 +77,14 @@ namespace FizzSDK
                     continue;
                 }
 
+                AddJointDeleter(rb.gameObject);
+
                 foreach (var connectedJoint in jointConnections.joints)
                 {
                     if (connectedJoint is ConfigurableJoint connectedConfigJoint)
                     {
                         var configJointExtendedEvents =
                             rb.gameObject.AddComponent<ConfigJointExtendedEvents>();
-
                         configJointExtendedEvents.joint = connectedConfigJoint;
 
                         var ultEventHolder =
@@ -97,7 +121,6 @@ namespace FizzSDK
                     propHealth.mod_Type = attackType;
                     propHealth.mod_TypeDamage = attackTypeDamage;
                 }
-
                 
                 if (!rb.gameObject.TryGetComponent<UltEventHolder>(out var ultEventHolder))
                 {

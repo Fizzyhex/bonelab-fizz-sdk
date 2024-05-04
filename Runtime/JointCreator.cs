@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace FizzSDK
 {
+    [AddComponentMenu("FizzSDK/Joint Creator")]
     public class JointCreator : MonoBehaviour, IJointScript
     {
         [SerializeField] private List<GameObject> rigidbodyContainers;
@@ -26,7 +27,9 @@ namespace FizzSDK
 
         private readonly Collider[] _overlapResults = new Collider[10];
 
-        private const float SearchPadding = 0.1f;
+        private const float MaxSearchPadding = 0.1f;
+        private const float SearchBoundsMultiplier = 0.1f;
+        private const float RootScaleFactor = 3;
 
         // Get the bounds of a GameObject including its children
         private Bounds GetBounds(GameObject obj)
@@ -84,7 +87,13 @@ namespace FizzSDK
         {
             var actionGuid = System.Guid.NewGuid().ToString();
             var allRigidbodies = GetAllRigidbodies();
-            var rootGameObjects = allRigidbodies.Select(rb => rb.gameObject.transform.root.gameObject).ToList();
+            var rootGameObjects = GetRootGameObjects(allRigidbodies);
+
+            // Scaling the root game objects up should help us with smaller objects
+            foreach (var rootGameObject in rootGameObjects)
+            {
+                //rootGameObject.transform.localScale *= RootScaleFactor;
+            }
 
             foreach (var rb in allRigidbodies)
             {
@@ -101,11 +110,18 @@ namespace FizzSDK
             foreach (var rb in allRigidbodies)
             {
                 var rbCollider = rb.gameObject.GetComponent<Collider>();
-                var searchRadius = (rbCollider.bounds.size / 2) + new Vector3(SearchPadding, SearchPadding, SearchPadding);
+                var searchRadius = (rbCollider.bounds.size / 2) + Vector3.Min(
+                    rbCollider.bounds.size * SearchBoundsMultiplier,
+                    new Vector3(MaxSearchPadding, MaxSearchPadding, MaxSearchPadding));
                 Physics.OverlapBoxNonAlloc(rb.worldCenterOfMass, searchRadius, _overlapResults);
 
                 foreach (var hitCollider in _overlapResults)
                 {
+                    if (!hitCollider)
+                    {
+                        continue;
+                    }
+                    
                     if (hitCollider.gameObject == rb.gameObject)
                     {
                         continue;
@@ -147,6 +163,11 @@ namespace FizzSDK
 
                     Debug.Log($"Created joint between {rb.gameObject} & {hitCollider.gameObject}");
                 }
+            }
+            
+            foreach (var rootGameObject in rootGameObjects)
+            {
+                //rootGameObject.transform.localScale /= RootScaleFactor;
             }
         }
 
