@@ -14,6 +14,5 @@ namespace FizzSDK.Utils
                 : gameObject.AddComponent<T>();
         }
     }
-
 }
 #endif

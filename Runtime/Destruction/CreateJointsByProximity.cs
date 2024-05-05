@@ -7,19 +7,11 @@ using UnityEngine;
 using FizzSDK.Utils;
 using System.Linq;
 
-namespace FizzSDK
+namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Joint Creator")]
-    public class JointCreator : MonoBehaviour, IJointScript
+    [AddComponentMenu("FizzSDK/Create Joints By Proximity")]
+    public class CreateJointsByProximity : DestructionIngredient
     {
-        [SerializeField] private List<GameObject> rigidbodyContainers;
-        [SerializeField] private List<Rigidbody> rigidbodies;
-        
-        [Header("Options")]
-        [Tooltip("If checked, new joints will be added in play mode")]
-        [SerializeField]
-        private bool createAtRuntime = false;
-
         [Header("Configurable Joint Settings")]
         [SerializeField]
         private float breakForce = Mathf.Infinity;
@@ -30,6 +22,8 @@ namespace FizzSDK
         private const float MaxSearchPadding = 0.1f;
         private const float SearchBoundsMultiplier = 0.1f;
         private const float RootScaleFactor = 3;
+
+        public override void UseIngredient(GameObject targetGameObject) => MakeJoints(targetGameObject);
 
         // Get the bounds of a GameObject including its children
         private Bounds GetBounds(GameObject obj)
@@ -43,14 +37,6 @@ namespace FizzSDK
             }
 
             return bounds;
-        }
-
-        private List<Rigidbody> GetAllRigidbodies()
-        {
-            var foundRigidbodies = SearchUtils.FindAllInContainers<Rigidbody>(rigidbodyContainers);
-            foundRigidbodies.AddRange(rigidbodies);
-
-            return foundRigidbodies;
         }
 
         private void ConfigureJoint(ConfigurableJoint joint)
@@ -83,29 +69,13 @@ namespace FizzSDK
             return rootGameObjects;
         }
 
-        public void MakeJoints()
+        public void MakeJoints(GameObject targetGameObject)
         {
             var actionGuid = System.Guid.NewGuid().ToString();
-            var allRigidbodies = GetAllRigidbodies();
+            var allRigidbodies = targetGameObject.GetComponentsInChildren<Rigidbody>().ToList();
             var rootGameObjects = GetRootGameObjects(allRigidbodies);
 
-            // Scaling the root game objects up should help us with smaller objects
-            foreach (var rootGameObject in rootGameObjects)
-            {
-                //rootGameObject.transform.localScale *= RootScaleFactor;
-            }
-
-            foreach (var rb in allRigidbodies)
-            {
-                var rootGameObject = rb.gameObject.transform.root.gameObject;
-
-                if (!rootGameObjects.Contains(rootGameObject))
-                {
-                    rootGameObjects.Add(rootGameObject);
-                }
-            }
-
-            Debug.Log("RBS: " + allRigidbodies.Count);
+            Debug.Log($"Rigidbody count: {allRigidbodies.Count}");
 
             foreach (var rb in allRigidbodies)
             {
@@ -163,19 +133,6 @@ namespace FizzSDK
 
                     Debug.Log($"Created joint between {rb.gameObject} & {hitCollider.gameObject}");
                 }
-            }
-            
-            foreach (var rootGameObject in rootGameObjects)
-            {
-                //rootGameObject.transform.localScale /= RootScaleFactor;
-            }
-        }
-
-        private void Awake()
-        {
-            if (createAtRuntime)
-            {
-                MakeJoints();
             }
         }
     }

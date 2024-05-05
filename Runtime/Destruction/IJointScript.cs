@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FizzSDK
+namespace FizzSDK.Destruction
 {
     public interface IJointScript
     {

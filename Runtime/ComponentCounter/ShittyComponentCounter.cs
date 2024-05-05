@@ -6,6 +6,7 @@ namespace FizzSDK
     public abstract class ShittyComponentCounter<T> : MonoBehaviour where T : Component
     {
         [HideInInspector] public string componentName;
+        [Tooltip("If set, only count components that are children of this object.")]
         [SerializeField] private GameObject container;
         
         [ContextMenu("Count!")]
