@@ -1,10 +1,12 @@
 #if UNITY_EDITOR
 
+using System;
 using UnityEngine;
 using UnityEditor;
 
 namespace FizzSDK
 {
+    [Obsolete("shit doesn't work D:, pls dont use")]
     public class PrefabPivotFixer : EditorWindow
     {
         private GameObject _prefabTarget;

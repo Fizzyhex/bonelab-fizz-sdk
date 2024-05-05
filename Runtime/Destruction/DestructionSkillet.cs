@@ -1,34 +1,32 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace FizzSDK.Destruction
 {
     public class DestructionSkillet : MonoBehaviour
     {
         [SerializeField] private List<DestructionIngredient> ingredients;
+        [Tooltip("The GameObject that will be saved as a prefab with added ingredients.")]
         [SerializeField] private GameObject targetGameObject;
+        [Tooltip("If true, ingredients will be added when in play mode for testing purposes.")]
+        [SerializeField] private bool cookAtRuntime = false;
         
-        public void SaveDishToPrefab()
+        public void SaveDishToPrefab(string prefabPath)
         {
+            var prefabName = Path.GetFileName(prefabPath);
+            
             var newPrefab = Instantiate(targetGameObject);
-            newPrefab.name = targetGameObject.name + "_dish";
+            newPrefab.name = prefabName;
 
             RefreshIngredients();
             
             foreach (var ingredient in ingredients)
             {
                 ingredient.UseIngredient(newPrefab);
-            }
-            
-            var prefabPath = $"Assets/{newPrefab.name}.prefab";
-            var i = 0;
-            
-            while (AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)))
-            {
-                prefabPath = $"Assets/{newPrefab.name}_{i}.prefab";
-                i++;
             }
             
             PrefabUtility.SaveAsPrefabAsset(newPrefab, prefabPath);
@@ -50,6 +48,15 @@ namespace FizzSDK.Destruction
             }
             
             ingredients.RemoveAll(ingredient => !ingredient);
+        }
+
+        private void Start()
+        {
+            if (!cookAtRuntime) return;
+            foreach (var ingredient in ingredients)
+            {
+                ingredient.UseIngredient(targetGameObject);
+            }
         }
     }
 }

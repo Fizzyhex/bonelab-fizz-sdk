@@ -1,15 +1,16 @@
 ﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Windows;
 
 namespace FizzSDK.Destruction
 {
     [CustomEditor(typeof(DestructionSkillet))]
     public class DestructionSkilletEditor : Editor
     {
-        bool _showInformation = false;
-        
-        void RefreshIngredients()
+        private bool _showInformation = false;
+
+        private void RefreshIngredients()
         {
             var myScript = (DestructionSkillet)target;
             myScript.RefreshIngredients();
@@ -43,11 +44,31 @@ namespace FizzSDK.Destruction
             }
             
             GUILayout.Space(10);
+            
+            if (GUILayout.Button("Save dish to prefab!"))
+            {
+                var myScript = (DestructionSkillet)target;
+                
+                var prefabOutputPath =
+                    EditorUtility.SaveFilePanel("Save Destruction Dish", "Assets", $"{myScript.gameObject.name}_destructible", "prefab");
 
-            if (!GUILayout.Button("Save dish to Prefab!")) return;
-
-            var myScript = (DestructionSkillet)target;
-            myScript.SaveDishToPrefab();
+                if (prefabOutputPath.Length == 0)
+                    return;
+                
+                // display a warning if the user is saving over an existing prefab
+                
+                if (File.Exists(prefabOutputPath))
+                {
+                    if (!EditorUtility.DisplayDialog("Overwrite prefab?",
+                        "Looks like you're trying to overwrite an existing prefab - you may want to keep a separate non-destructible version. Continue?",
+                        "Yes", "No"))
+                    {
+                        return;
+                    }
+                }
+                
+                myScript.SaveDishToPrefab(prefabOutputPath);
+            }
         }
     }
 }

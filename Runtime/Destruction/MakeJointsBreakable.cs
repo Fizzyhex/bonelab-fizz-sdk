@@ -16,7 +16,7 @@ namespace FizzSDK.Destruction
     [AddComponentMenu("FizzSDK/Make Joints Breakable")]
     public class MakeJointsBreakable : DestructionIngredient
     {
-        [Header("Prop Health")]
+        [Header("Prop_Health Settings")]
         public int maxHealth = 100;
         public AttackType attackType = AttackType.Blunt;
         public float attackTypeDamage = 0.75f;
