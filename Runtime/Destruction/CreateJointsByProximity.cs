@@ -130,8 +130,6 @@ namespace FizzSDK.Destruction
                     EditorUtility.SetDirty(joint);
 
                     ConfigureJoint(joint);
-
-                    Debug.Log($"Created joint between {rb.gameObject} & {hitCollider.gameObject}");
                 }
             }
         }

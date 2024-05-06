@@ -49,8 +49,12 @@ namespace FizzSDK.Destruction
             {
                 var myScript = (DestructionSkillet)target;
                 
-                var prefabOutputPath =
-                    EditorUtility.SaveFilePanel("Save Destruction Dish", "Assets", $"{myScript.gameObject.name}_destructible", "prefab");
+                var prefabOutputPath = EditorUtility.SaveFilePanel(
+                    "Save Destruction Dish", 
+                    "Assets", 
+                    $"{myScript.targetGameObject.name}_destructible", 
+                    "prefab"
+                );
 
                 if (prefabOutputPath.Length == 0)
                     return;

@@ -7,11 +7,12 @@ using UnityEngine.Serialization;
 
 namespace FizzSDK.Destruction
 {
+    [AddComponentMenu("FizzSDK/Destruction Skillet")]
     public class DestructionSkillet : MonoBehaviour
     {
-        [SerializeField] private List<DestructionIngredient> ingredients;
+        [SerializeField] private List<DestructionIngredient> ingredients = new();
         [Tooltip("The GameObject that will be saved as a prefab with added ingredients.")]
-        [SerializeField] private GameObject targetGameObject;
+        public GameObject targetGameObject;
         [Tooltip("If true, ingredients will be added when in play mode for testing purposes.")]
         [SerializeField] private bool cookAtRuntime = false;
         
