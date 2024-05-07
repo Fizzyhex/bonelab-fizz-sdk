@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Create Joints By Proximity")]
+    [AddComponentMenu("FizzSDK/Destruction/Create Joints By Proximity")]
     public class CreateJointsByProximity : DestructionIngredient
     {
         [Header("Configurable Joint Settings")]

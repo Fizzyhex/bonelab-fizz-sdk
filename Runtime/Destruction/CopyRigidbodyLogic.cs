@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Copy Rigidbody Logic")]
+    [AddComponentMenu("FizzSDK/Destruction/Copy Rigidbody Logic")]
     public class CopyRigidbodyLogic : DestructionIngredient
     {
-        [SerializeField] private GameObject template;
+        public GameObject template;
 
         private static void UltEventReferenceSwap(UltEventBase ultEvent, GameObject from, GameObject to)
         {

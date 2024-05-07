@@ -13,7 +13,7 @@ using FizzSDK.Utils;
 
 namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Make Joints Breakable")]
+    [AddComponentMenu("FizzSDK/Destruction/Make Joints Breakable")]
     public class MakeJointsBreakable : DestructionIngredient
     {
         [Header("Prop_Health Settings")]
@@ -71,7 +71,6 @@ namespace FizzSDK.Destruction
                     propHealth.mod_Impact = 1;
                     propHealth.thr_Impact = 1;
 
-                    // set private cur_health field using reflection
                     var curHealthField = typeof(Prop_Health).GetField("cur_Health",
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     if (curHealthField != null) curHealthField.SetValue(propHealth, maxHealth);
