@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿#if UNITY_EDITOR
+using System.Linq;
 using UltEvents;
 using UnityEngine;
 
@@ -64,3 +65,4 @@ namespace FizzSDK.Destruction
         }
     }
 }
+#endif

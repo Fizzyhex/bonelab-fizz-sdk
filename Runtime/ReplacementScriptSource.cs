@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 
 namespace FizzSDK
 {
@@ -8,3 +9,4 @@ namespace FizzSDK
         [Multiline] public string source = "";
     }
 }
+#endif

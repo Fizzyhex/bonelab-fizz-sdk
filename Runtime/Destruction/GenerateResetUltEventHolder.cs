@@ -1,9 +1,12 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using FizzSDK.Utils;
+using SLZ.Bonelab;
 using SLZ.Props;
+using SLZ.Utilities;
 using UltEvents;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -54,7 +57,6 @@ namespace FizzSDK.Destruction
 
                 if (propHealth)
                 {
-                    // Call propHealth.ReceiveHeal with max_Health
                     var receiveHealMethod = typeof(Prop_Health).GetMethod("ReceiveHeal", new Type[] { typeof(float) });
                     var receiveHealDelegate = Delegate.CreateDelegate(typeof(Action<float>), propHealth, receiveHealMethod);
                     var receiveHealCall = ultEventHolder.Event.AddPersistentCall(receiveHealDelegate);
@@ -65,9 +67,17 @@ namespace FizzSDK.Destruction
                     var enableHealthCall = ultEventHolder.Event.AddPersistentCall(enableHealthDelegate);
                     enableHealthCall.SetArguments(true);
                 }
+
+                var genericTrigger = rb.gameObject.GetComponent<TriggerLasers>();
+
+                if (genericTrigger)
+                {
+                    genericTrigger.obj_SpecificTrigger = rb.gameObject;
+                }
                 
                 EditorUtility.SetDirty(ultEventHolder);
             }
         }
     }
 }
+#endif
