@@ -54,6 +54,11 @@ namespace FizzSDK.Destruction
                 UltEventReferenceSwap(lifeCycleEvents.StartEvent, logicRoot, logicTo);
                 UltEventReferenceSwap(lifeCycleEvents.DestroyEvent, logicRoot, logicTo);
             }
+
+            foreach (var logicBehaviour in logicClone.GetComponentsInChildren<RigidbodyLogicBehaviour>())
+            {
+                logicBehaviour.RunLogic(logicTo);
+            }
         }
 
         public override void UseIngredient(GameObject targetGameObject)

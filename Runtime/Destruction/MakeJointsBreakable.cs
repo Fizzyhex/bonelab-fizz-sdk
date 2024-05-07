@@ -23,7 +23,7 @@ namespace FizzSDK.Destruction
 
         public override void UseIngredient(GameObject targetGameObject) => MakeJoints(targetGameObject);
 
-        public void MakeJoints(GameObject targetGameObject)
+        private void MakeJoints(GameObject targetGameObject)
         {
             var allRbs = targetGameObject.GetComponentsInChildren<Rigidbody>();
 
@@ -70,11 +70,7 @@ namespace FizzSDK.Destruction
                     propHealth.mod_Attack = 1;
                     propHealth.mod_Impact = 1;
                     propHealth.thr_Impact = 1;
-
-                    var curHealthField = typeof(Prop_Health).GetField("cur_Health",
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    if (curHealthField != null) curHealthField.SetValue(propHealth, maxHealth);
-
+                    propHealth.cur_Health = maxHealth;
                     propHealth.mod_Type = attackType;
                     propHealth.mod_TypeDamage = attackTypeDamage;
                 }

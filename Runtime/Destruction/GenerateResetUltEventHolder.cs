@@ -67,6 +67,15 @@ namespace FizzSDK.Destruction
                     var enableHealthCall = ultEventHolder.Event.AddPersistentCall(enableHealthDelegate);
                     enableHealthCall.SetArguments(true);
                 }
+                
+                var configJointExtendedEvents = rb.gameObject.GetComponent<ConfigJointExtendedEvents>();
+
+                if (configJointExtendedEvents)
+                {
+                    var setAllLockedMethod = typeof(ConfigJointExtendedEvents).GetMethod("SetAllLocked", new Type[] {});
+                    var setAllLockedDelegate = Delegate.CreateDelegate(typeof(Action), configJointExtendedEvents, setAllLockedMethod);
+                    ultEventHolder.Event.AddPersistentCall(setAllLockedDelegate);
+                }
 
                 var triggerLasers = rb.gameObject.GetComponent<TriggerLasers>();
 

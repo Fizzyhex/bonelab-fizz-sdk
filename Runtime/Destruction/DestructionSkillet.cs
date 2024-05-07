@@ -22,8 +22,6 @@ namespace FizzSDK.Destruction
             
             var newPrefab = Instantiate(targetGameObject);
             newPrefab.name = prefabName;
-
-            RefreshIngredients();
             
             foreach (var ingredient in ingredients)
             {
