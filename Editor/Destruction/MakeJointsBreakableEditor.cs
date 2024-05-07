@@ -25,7 +25,7 @@ namespace FizzSDK.Destruction
                 var template = new GameObject("Prop_Health Template");
                 
                 var propHealth = template.AddComponent<Prop_Health>();
-                myScript.ApplyDefaultPropHealthValues(propHealth);
+                MakeJointsBreakable.ApplyDefaultPropHealthValues(propHealth);
                 
                 template.transform.parent = myScript.gameObject.transform;
                 myScript.propHealthTemplate = propHealth;
