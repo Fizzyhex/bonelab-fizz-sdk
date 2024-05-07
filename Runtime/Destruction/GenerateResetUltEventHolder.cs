@@ -12,7 +12,7 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Destruction/Generate Reset Event Holder")]
+    [AddComponentMenu("FizzSDK/Destruction Toolkit/Generate Reset Event Holder")]
     public class GenerateResetUltEventHolder : DestructionIngredient
     {
         [Tooltip("The name of the GameObject that'll hold the UltEventHolder. A new one will be created if it doesn't exist.")]

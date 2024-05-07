@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Destruction/Copy Rigidbody Logic")]
+    [AddComponentMenu("FizzSDK/Destruction Toolkit/Copy Rigidbody Logic")]
     public class CopyRigidbodyLogic : DestructionIngredient
     {
         public GameObject template;

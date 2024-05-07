@@ -13,7 +13,7 @@ using FizzSDK.Utils;
 
 namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Destruction/Make Joints Breakable")]
+    [AddComponentMenu("FizzSDK/Destruction Toolkit/Make Joints Breakable")]
     public class MakeJointsBreakable : DestructionIngredient
     {
         [Header("Prop_Health Settings")]

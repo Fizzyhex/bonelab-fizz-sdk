@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Destruction/Destruction Skillet")]
+    [AddComponentMenu("FizzSDK/Destruction Toolkit/Destruction Skillet")]
     public class DestructionSkillet : MonoBehaviour
     {
         [SerializeField] private List<DestructionIngredient> ingredients = new();

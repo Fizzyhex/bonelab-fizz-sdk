@@ -1,13 +1,13 @@
 {
   "name": "com.fizzyhex.bonelab-fizz-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "displayName": "FizzSDK",
   "description": "Editor utilities for BONELAB mods.",
   "unity": "2021.3",
   "unityRelease": "5f1",
-  "documentationUrl": "https://example.com/",
-  "changelogUrl": "https://example.com/changelog.html",
-  "licensesUrl": "https://example.com/licensing.html",
+  "documentationUrl": "https://github.com/Fizzyhex/bonelab-fizz-sdk",
+  "changelogUrl": "https://github.com/Fizzyhex/bonelab-fizz-sdk",
+  "licensesUrl": "https://github.com/Fizzyhex/bonelab-fizz-sdk",
   "dependencies": {},
   "keywords": [
     "FizzSDK",
@@ -15,7 +15,7 @@
   ],
   "author": {
     "name": "Fizzyhex",
-    "email": "no-contact@example.com",
+    "email": "contact.cyfizz@gmail.com",
     "url": "https://github.com/Fizzyhex"
   }
 }
