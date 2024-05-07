@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using System.Collections.Generic;
 using System.Linq;
 using FizzSDK.Utils;
 using SLZ.Interaction;
@@ -28,3 +29,4 @@ namespace FizzSDK.Destruction
         public override void UseIngredient(GameObject target) => AddHosts(target);
     }
 }
+#endif
