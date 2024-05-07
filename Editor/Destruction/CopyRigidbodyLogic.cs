@@ -4,7 +4,7 @@ using UnityEditor;
 namespace FizzSDK.Destruction
 {
     [CustomEditor(typeof(CopyRigidbodyLogic))]
-    public class CopyRigidbodyLogicEditor : Editor
+    public class CopyRigidbodyLogicEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

@@ -6,7 +6,7 @@ using UnityEngine.Windows;
 namespace FizzSDK.Destruction
 {
     [CustomEditor(typeof(DestructionSkillet))]
-    public class DestructionSkilletEditor : Editor
+    public class DestructionSkilletEditor : UnityEditor.Editor
     {
         private bool _showInformation = false;
 
@@ -26,8 +26,10 @@ namespace FizzSDK.Destruction
                 style.wordWrap = true;
 
                 GUILayout.Label(
-                    "The Destruction Skillet is used to output new prefabs using the ingredient scripts you provide it." +
-                    "\n\nEach ingredient script will run in whatever order you specify (you'll want to put 'Joint Creator' before 'Make Joints Breakable' for example!)",
+                    "The Destruction Skillet is used to output new prefabs using the ingredient scripts you provide it."
+                    + "\n\nEach ingredient script will run in whatever order you specify (you'll want to put 'Joint Creator' before 'Make Joints Breakable' for example!)"
+                    + "\n\nWhen you add new ingredients to this GameObject, click 'refresh ingredients' to add them to the list.",
+                    
                     style
                 );
                 

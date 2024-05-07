@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6f7145ab5094b9896f77a5a39ea305c, type: 3}
+  m_Name: Prop_Health
+  m_EditorClassIdentifier: 
+  source: "// This has been modified to make BreakEvent & cur_Health public\r\n\r\nusing
+    System;\r\nusing System.Collections;\r\nusing System.Collections.Generic;\r\nusing
+    System.Diagnostics;\r\nusing System.Runtime.CompilerServices;\r\nusing SLZ.Combat;\r\nusing
+    SLZ.Marrow.Data;\r\nusing SLZ.Marrow.Pool;\r\nusing SLZ.Marrow.Utilities;\r\nusing
+    SLZ.SFX;\r\nusing UnityEngine;\r\nusing UnityEngine.Events;\r\n\r\nnamespace
+    SLZ.Props\r\n{\r\n\tpublic class Prop_Health : SpawnEvents\r\n\t{\r\n\t\tprivate
+    static ComponentCache<Prop_Health> _cache;\r\n\r\n\t\tpublic bool RESETABLE;\r\n\r\n\t\tpublic
+    bool Pooled;\r\n\r\n\t\tpublic Action onDestroyDelegate;\r\n\r\n\t\t[Tooltip(\"Can
+    be damaged by physical impacts\")]\r\n\t\t[Header(\"IMPACT\")]\r\n\t\t[Space(2f)]\r\n\t\tpublic
+    bool damageFromImpact;\r\n\r\n\t\t[Tooltip(\"Modifier multiplier to collision\")]\r\n\t\tpublic
+    float mod_Impact;\r\n\r\n\t\t[Tooltip(\"Threshold of impact magnitude required
+    to damage\")]\r\n\t\tpublic float thr_Impact;\r\n\r\n\t\t[Tooltip(\"Can this
+    use a mask to ignore damage\")]\r\n\t\tpublic bool useMask;\r\n\r\n\t\t[Tooltip(\"Layer
+    to Minimal Hit\")]\r\n\t\tpublic LayerMask msk_Impact;\r\n\r\n\t\t[Tooltip(\"Amount
+    of Minimal Mod\")]\r\n\t\tpublic float mod_Minimal;\r\n\r\n\t\t[Space(10f)]\r\n\t\t[Header(\"ATTACKED\")]\r\n\t\t[Tooltip(\"Can
+    be damaged by attacks\")]\r\n\t\tpublic bool damageFromAttack;\r\n\r\n\t\t[Tooltip(\"Modifier
+    multiplier to attack damage\")]\r\n\t\tpublic float mod_Attack;\r\n\r\n\t\t[Tooltip(\"Can
+    this use an attackType to adjust damage\")]\r\n\t\tpublic bool useType;\r\n\r\n\t\t[Tooltip(\"Attack
+    type high damage\")]\r\n\t\tpublic AttackType mod_Type;\r\n\r\n\t\t[Tooltip(\"Modifier
+    multiplier to attack type\")]\r\n\t\tpublic float mod_TypeDamage;\r\n\r\n\t\t[Space(10f)]\r\n\t\t[Tooltip(\"Colliders
+    for critical hits\")]\r\n\t\t[Header(\"CRITICAL HIT\")]\r\n\t\tpublic Collider[]
+    col_crit;\r\n\r\n\t\t[Tooltip(\"Critical hit modifier percent\")]\r\n\t\tpublic
+    float mod_crit;\r\n\r\n\t\t[Tooltip(\"FX for crit hit\")]\r\n\t\tpublic GameObject
+    fx_crit;\r\n\r\n\t\t[Tooltip(\"Prop's maximum health\")]\r\n\t\t[Header(\"HEALTH\")]\r\n\t\t[Space(10f)]\r\n\t\tpublic
+    float max_Health;\r\n\r\n\t\t[Tooltip(\"Prop's current health\")]\r\n\t\t[SerializeField]\r\n\t\tpublic
+    float cur_Health;\r\n\r\n\t\t[Tooltip(\"Required hits to break, 1 = default\")]\r\n\t\tpublic
+    int req_hit_count;\r\n\r\n\t\t[HideInInspector]\r\n\t\tpublic int hits;\r\n\r\n\t\t[HideInInspector]\r\n\t\tpublic
+    bool bloodied;\r\n\r\n\t\t[Tooltip(\"0-1 as percent for when bloodied effects
+    0 = no effect\")]\r\n\t\t[Range(0f, 1f)]\r\n\t\tpublic float per_Bloodied;\r\n\r\n\t\t[Tooltip(\"True
+    = use materials instead of objects for damage look\")]\r\n\t\tpublic bool useMaterialChange;\r\n\r\n\t\t[Tooltip(\"Health
+    to regen per frequency\")]\r\n\t\t[Header(\"HEALTH REGEN\")]\r\n\t\t[Space(10f)]\r\n\t\tpublic
+    float amt_Regen;\r\n\r\n\t\t[Tooltip(\"Time until regen starts after hit\")]\r\n\t\tpublic
+    float wait_Regen_t;\r\n\r\n\t\t[Tooltip(\"Frequency of regen in seconds\")]\r\n\t\tpublic
+    WaitForSeconds freq_Regen_t;\r\n\r\n\t\t[Tooltip(\"Currently regening\")]\r\n\t\tpublic
+    bool regenerating;\r\n\r\n\t\t[Tooltip(\"FX for regenerating\")]\r\n\t\tpublic
+    GameObject fx_regen;\r\n\r\n\t\t[Tooltip(\"Threshold of damage to cause a reaction\")]\r\n\t\t[Header(\"REACTION\")]\r\n\t\t[Space(5f)]\r\n\t\tpublic
+    float thr_React;\r\n\r\n\t\tprivate bool reacting;\r\n\r\n\t\t[Tooltip(\"Maximum
+    bits to spawn\")]\r\n\t\t[Space(10f)]\r\n\t\t[Header(\"SUBSPAWN\")]\r\n\t\tpublic
+    int max_Bits;\r\n\r\n\t\t[Tooltip(\"Minimum bits to spawn\")]\r\n\t\tpublic int
+    min_Bits;\r\n\r\n\t\t[Tooltip(\"Spawn hero props?\")]\r\n\t\tpublic bool spawnHeroProps;\r\n\r\n\t\t[Tooltip(\"0
+    = immediate, 0<t = seconds, 0>t = don't use time\")]\r\n\t\tpublic float t_Despawn;\r\n\r\n\t\t[Tooltip(\"Occlusion
+    time to despawn\")]\r\n\t\tpublic float t_Occlusion;\r\n\r\n\t\tprivate float
+    t_stored_Occlusion;\r\n\r\n\t\t[Tooltip(\"Can occlusion kill objects?\")]\r\n\t\tpublic
+    bool useOcclusion;\r\n\r\n\t\tprivate bool rebool;\r\n\r\n\t\t[Header(\"DEATH\")]\r\n\t\t[Space(5f)]\r\n\t\tpublic
+    bool use_Explosion;\r\n\r\n\t\tpublic bool drop_Bloodied;\r\n\r\n\t\tpublic float
+    bloodied_t;\r\n\r\n\t\tpublic float force_Explosion;\r\n\r\n\t\tpublic float
+    force_Rotation;\r\n\r\n\t\tpublic GameObject fx_Explosion;\r\n\r\n\t\tpublic
+    GameObject fx_Bloodied;\r\n\r\n\t\tpublic GameObject fx_Death;\r\n\r\n\t\t[SerializeField]\r\n\t\tprivate
+    float BreakEffectSize;\r\n\r\n\t\t[Space(5f)]\r\n\t\t[Header(\"REWARD\")]\r\n\t\tpublic
+    bool rnd_Item;\r\n\r\n\t\tpublic float rnd_Chance;\r\n\r\n\t\tpublic GameObject[]
+    obj_Reward;\r\n\r\n\t\tpublic GameObject fx_Reward;\r\n\r\n\t\t[Space(10f)]\r\n\t\t[Header(\"REFERENCES\")]\r\n\t\t[Tooltip(\"Default
+    Prop 100% health\")]\r\n\t\tpublic GameObject prop_Whole;\r\n\r\n\t\t[Tooltip(\"Primary
+    Chunk Tracker\")]\r\n\t\tpublic GameObject chunk_Tracker;\r\n\r\n\t\t[Tooltip(\"Damaged
+    Prop art states\")]\r\n\t\tpublic GameObject[] prop_Damaged;\r\n\r\n\t\t[Tooltip(\"Damaged
+    Material states\")]\r\n\t\tpublic Material[] mat_Damaged;\r\n\r\n\t\t[HideInInspector]\r\n\t\tprivate
+    Material mat_Default;\r\n\r\n\t\t[Tooltip(\"Shattered prop bits\")]\r\n\t\tpublic
+    GameObject[] prop_Bits;\r\n\r\n\t\t[Tooltip(\"Spawnable hero props\")]\r\n\t\tpublic
+    GameObject[] prop_Hero;\r\n\r\n\t\t[Tooltip(\"Audioclips for bloodied hits\")]\r\n\t\tpublic
+    AudioClip[] clip_bloodied;\r\n\r\n\t\tprivate ImpactSFX impactSFX;\r\n\r\n\t\tprivate
+    SimpleTimeDestroy impactSRC_Destroy;\r\n\r\n\t\t[SerializeField]\r\n\t\tpublic
+    UnityEvent BreakEvent;\r\n\r\n\t\t[HideInInspector]\r\n\t\tprivate Vector3 vel;\r\n\r\n\t\t[HideInInspector]\r\n\t\tprivate
+    Vector3 ang_vel;\r\n\r\n\t\tprivate bool _isDirty;\r\n\r\n\t\tprivate Vector3
+    CenterOffset;\r\n\r\n\t\tprivate Vector3 BoundScale;\r\n\r\n\t\t[Space(10f)]\r\n\t\t[Header(\"DEPENDENCIES\")]\r\n\t\tpublic
+    Spawnable blasterDustSpawnable;\r\n\r\n\t\tpublic Spawnable breakEffectSpawnable;\r\n\r\n\t\tpublic
+    static ComponentCache<Prop_Health> Cache\r\n\t\t{\r\n\t\t\tget\r\n\t\t\t{\r\n\t\t\t\treturn
+    null;\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\tprotected void Awake()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tprotected
+    override void Start()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tprotected override void OnSpawn(GameObject
+    go)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tprivate void GetMaxBounds()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tprivate
+    void STORESTART()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tprivate void SAFETYSTART()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic
+    void OnReceivedCollision(Collision impact, float relVelocitySqr, bool isStay
+    = false)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic void OnReceivedAttack(Attack attack)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic
+    void ReceiveHeal(float health)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic void TAKEDAMAGE(float
+    damage, bool crit = false, AttackType attackType = AttackType.None)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic
+    void TIMEDKILL()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic void SETPROP()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic
+    void DESTROYED()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic void StartRegen()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tprivate
+    IEnumerator Regenerate()\r\n\t\t{\r\n\t\t\treturn null;\r\n\t\t}\r\n\r\n\t\tprivate
+    void EffectsCritHit()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tprivate void EffectsRegen(bool
+    regeneration = true)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tprivate void EffectsBloodied()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic
+    void EffectsDeath()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic void Reaction(float damage)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic
+    void SPAWNBITS()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic void ResetPropBits(Transform[]
+    bitRefs)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic void ResetPropHero(Transform[] heroRefs)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic
+    void OnBecameInvisible()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic void OnBecameVisible()\r\n\t\t{\r\n\t\t}\r\n\r\n\t\tpublic
+    IEnumerator COUNTOCC()\r\n\t\t{\r\n\t\t\treturn null;\r\n\t\t}\r\n\r\n\t\tpublic
+    Prop_Health()\r\n\t\t\t: base()\r\n\t\t{\r\n\t\t}\r\n\t}\r\n}\r\n"

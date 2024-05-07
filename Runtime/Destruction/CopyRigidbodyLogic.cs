@@ -26,8 +26,6 @@ namespace FizzSDK.Destruction
                 // use reflection to change _Target as it's private
                 var field = call.GetType().GetField("_Target", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 field.SetValue(call, newC);
-
-                Debug.Log($"Replaced {from.name} with {to.name} in {targetComponent.gameObject.name} UltEvent");
             }
         }
         

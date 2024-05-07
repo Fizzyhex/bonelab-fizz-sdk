@@ -4,7 +4,7 @@ using UnityEditor;
 namespace FizzSDK.Destruction
 {
     [CustomEditor(typeof(CreateJointsByProximity))]
-    public class CreateJointsByProximityEditor : Editor
+    public class CreateJointsByProximityEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
