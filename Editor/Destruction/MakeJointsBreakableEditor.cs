@@ -3,6 +3,8 @@ using SLZ.Props;
 using UnityEditor;
 using UnityEngine;
 
+using FizzSDK.Utils;
+
 namespace FizzSDK.Destruction
 {
     [CustomEditor(typeof(MakeJointsBreakable))]
@@ -16,9 +18,20 @@ namespace FizzSDK.Destruction
                 MessageType.Info
             );
             
-            DrawDefaultInspector();
-            
             var myScript = (MakeJointsBreakable)target;
+            
+            if (myScript.propHealthTemplate)
+            {
+                if (myScript.propHealthTemplate.BreakEvent != null && myScript.propHealthTemplate.BreakEvent.GetPersistentEventCount() > 0)
+                {
+                    EditorGUILayout.HelpBox(
+                        "Looks like your Prop_Health template's break event isn't empty - any references will not be replaced when it's copied. Please double check them on your dish after cooking.",
+                        MessageType.Warning
+                    );
+                }
+            }
+            
+            DrawDefaultInspector();
 
             if (GUILayout.Button("Generate Prop_Health template"))
             {

@@ -94,6 +94,8 @@ namespace FizzSDK.Destruction
                 {
                     continue;
                 }
+                
+                // FUTURE: Swap out references to the Prop_Health's GameObject to allow custom logic on the BreakEvent?
 
                 // :(
                 propHealth.BreakEvent ??= new UnityEvent();
