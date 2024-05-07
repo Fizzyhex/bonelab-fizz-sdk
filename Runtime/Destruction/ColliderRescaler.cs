@@ -6,8 +6,8 @@ namespace FizzSDK.Destruction
 {
     internal struct ColliderInfo
     {
-        public Vector3 center;
-        public Vector3 size;
+        public Vector3 Center;
+        public Vector3 Size;
     }
     
     [AddComponentMenu("FizzSDK/Destruction Toolkit/Collider Rescaler")]
@@ -23,8 +23,8 @@ namespace FizzSDK.Destruction
             {
                 return new ColliderInfo
                 {
-                    center = boxCollider.center,
-                    size = boxCollider.size
+                    Center = boxCollider.center,
+                    Size = boxCollider.size
                 };
             }
             
@@ -34,15 +34,15 @@ namespace FizzSDK.Destruction
             {
                 return new ColliderInfo
                 {
-                    center = Vector3.zero,
-                    size = meshCollider.bounds.size
+                    Center = Vector3.zero,
+                    Size = meshCollider.bounds.size
                 };
             }
             
             return new ColliderInfo
             {
-                center = Vector3.zero,
-                size = Vector3.zero
+                Center = Vector3.zero,
+                Size = Vector3.zero
             };
         }
         
@@ -55,12 +55,12 @@ namespace FizzSDK.Destruction
             {
                 var scale = root.transform.localScale;
                 var newScale = new Vector3(
-                    colliderInfo.size.x * sizeMultiplier.x,
-                    colliderInfo.size.y * sizeMultiplier.y,
-                    colliderInfo.size.z * sizeMultiplier.z
+                    colliderInfo.Size.x * sizeMultiplier.x,
+                    colliderInfo.Size.y * sizeMultiplier.y,
+                    colliderInfo.Size.z * sizeMultiplier.z
                 );
 
-                targetCollider.center = colliderInfo.center;
+                targetCollider.center = colliderInfo.Center;
                 targetCollider.size = newScale;
             }
         }

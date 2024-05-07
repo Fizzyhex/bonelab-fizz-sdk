@@ -34,7 +34,7 @@ namespace FizzSDK.Destruction
         {
             var logicFrom = logicRoot.transform.GetChild(0).gameObject;
             var logicClone = Instantiate(logicFrom, logicTo.transform, false);
-            logicClone.name = "RigidbodyLogic";
+            logicClone.name = logicFrom.name;
 
             foreach (var ultEventHolder in logicClone.GetComponentsInChildren<UltEventHolder>())
             {
