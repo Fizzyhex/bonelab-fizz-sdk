@@ -76,7 +76,7 @@ namespace FizzSDK.Destruction
                     if (prefabOutputPath.Length == 0)
                         return;
                     
-                    prefabOutputPath = "Assets\\" + PathUtil.MakeRelativePath(prefabOutputPath, Application.dataPath);
+                    prefabOutputPath = "Assets\\" + PathUtils.MakeRelativePath(prefabOutputPath, Application.dataPath);
 
                     if (File.Exists(prefabOutputPath))
                     {

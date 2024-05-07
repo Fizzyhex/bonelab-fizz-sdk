@@ -7217,6 +7217,7 @@ GameObject:
   - component: {fileID: 6635103510409091871}
   - component: {fileID: 6635103510409091867}
   - component: {fileID: 6635103510409091844}
+  - component: {fileID: 1754181433436485193}
   - component: {fileID: 6635103510409091866}
   m_Layer: 0
   m_Name: THE WALL (Skillet)
@@ -7296,6 +7297,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   template: {fileID: 1575032899499534144}
+--- !u!114 &1754181433436485193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6635103510409091870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e2d6391c1854d42bb51c2f0dfec6cc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6635103510409091866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7313,8 +7326,10 @@ MonoBehaviour:
   - {fileID: 6635103510409091871}
   - {fileID: 6635103510409091867}
   - {fileID: 6635103510409091844}
+  - {fileID: 1754181433436485193}
   targetGameObject: {fileID: 3855715279003958870}
-  cookAtRuntime: 1
+  cookAtRuntime: 0
+  savedPrefabPath: 
 --- !u!1 &7944204528026817274
 GameObject:
   m_ObjectHideFlags: 0

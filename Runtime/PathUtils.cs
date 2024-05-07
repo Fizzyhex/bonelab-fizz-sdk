@@ -3,7 +3,7 @@ using System.IO;
 
 namespace FizzSDK.Utils
 {
-    public static class PathUtil
+    public static class PathUtils
     {
         // Source: https://gist.github.com/AlexeyMz/183b3ab2c4dbb0a7de5b
         public static string MakeRelativePath(string absolutePath, string pivotFolder)
