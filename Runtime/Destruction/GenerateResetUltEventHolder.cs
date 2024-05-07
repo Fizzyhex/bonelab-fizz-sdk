@@ -68,11 +68,11 @@ namespace FizzSDK.Destruction
                     enableHealthCall.SetArguments(true);
                 }
 
-                var genericTrigger = rb.gameObject.GetComponent<TriggerLasers>();
+                var triggerLasers = rb.gameObject.GetComponent<TriggerLasers>();
 
-                if (genericTrigger)
+                if (triggerLasers && !triggerLasers.obj_SpecificTrigger)
                 {
-                    genericTrigger.obj_SpecificTrigger = rb.gameObject;
+                    triggerLasers.obj_SpecificTrigger = rb.gameObject;
                 }
                 
                 EditorUtility.SetDirty(ultEventHolder);
