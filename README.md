@@ -9,4 +9,4 @@ The destruction toolkit consists of components that automatically add joints, lo
 
 ## Attribution
 
-Icons: https://github.com/legacy-icons/famfamfam-silk
+Icons: https://github.com/legacy-icons/famfamfam-silk // https://assets.scu.edu/images/icon/
