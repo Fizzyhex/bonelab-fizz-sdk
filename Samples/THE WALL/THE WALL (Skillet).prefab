@@ -423,7 +423,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1575032898554324546
 Transform:
   m_ObjectHideFlags: 0
@@ -1805,7 +1805,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1575032898891503939
 Transform:
   m_ObjectHideFlags: 0
@@ -4572,7 +4572,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1575032899969671482
 Transform:
   m_ObjectHideFlags: 0
@@ -6877,16 +6877,16 @@ MonoBehaviour:
   Pooled: 1
   damageFromImpact: 1
   mod_Impact: 1
-  thr_Impact: 5
-  useMask: 0
+  thr_Impact: 15
+  useMask: 1
   msk_Impact:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   mod_Minimal: 0
   damageFromAttack: 1
   mod_Attack: 1
   useType: 0
-  mod_Type: 2
+  mod_Type: 0
   mod_TypeDamage: 0
   col_crit: []
   mod_crit: 0

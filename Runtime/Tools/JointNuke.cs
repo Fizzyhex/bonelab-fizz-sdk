@@ -1,9 +1,9 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
 
-namespace FizzSDK.Destruction
+namespace FizzSDK.Tools
 {
-    [AddComponentMenu("FizzSDK/Destruction Toolkit/Joint Nuke")]
+    [AddComponentMenu("FizzSDK/Tools/Joint Nuke")]
     public class JointNuke : MonoBehaviour
     {
         [SerializeField] private GameObject container;

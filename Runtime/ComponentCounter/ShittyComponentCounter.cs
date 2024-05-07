@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿#if UNITY_EDITOR
+using System.Linq;
 using UnityEngine;
 
 namespace FizzSDK
@@ -23,3 +24,4 @@ namespace FizzSDK
         }
     }
 }
+#endif

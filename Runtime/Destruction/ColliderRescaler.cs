@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿#if UNITY_EDITOR
+using System.Numerics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -66,3 +67,4 @@ namespace FizzSDK.Destruction
         }
     }
 }
+#endif

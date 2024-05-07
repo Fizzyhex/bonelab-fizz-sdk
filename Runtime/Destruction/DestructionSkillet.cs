@@ -16,7 +16,9 @@ namespace FizzSDK.Destruction
         [Tooltip("If true, ingredients will be added when in play mode for testing purposes.")]
         [SerializeField] private bool cookAtRuntime = false;
         
-        public void SaveDishToPrefab(string prefabPath)
+        [HideInInspector] public string savedPrefabPath = "";
+        
+        public GameObject SaveDishToPrefab(string prefabPath)
         {
             var prefabName = Path.GetFileName(prefabPath);
             
@@ -32,6 +34,8 @@ namespace FizzSDK.Destruction
             
             DestroyImmediate(newPrefab);
             Debug.Log($"Prefab saved to {prefabPath}!");
+            
+            return newPrefab;
         }
         
         public void RefreshIngredients()

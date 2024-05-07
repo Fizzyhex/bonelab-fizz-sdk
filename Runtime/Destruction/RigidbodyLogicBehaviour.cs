@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 
 namespace FizzSDK.Destruction
 {
@@ -7,3 +8,4 @@ namespace FizzSDK.Destruction
         public abstract void RunLogic(GameObject root);
     }
 }
+#endif
