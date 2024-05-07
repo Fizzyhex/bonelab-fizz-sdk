@@ -16,18 +16,35 @@ namespace FizzSDK.Destruction
     [AddComponentMenu("FizzSDK/Destruction Toolkit/Make Joints Breakable")]
     public class MakeJointsBreakable : DestructionIngredient
     {
-        [Header("Prop_Health Settings")]
-        public int maxHealth = 100;
-        public AttackType attackType = AttackType.Blunt;
-        public float attackTypeDamage = 0.75f;
-
+        [Tooltip("Template for Prop_Health component to be added to all objects with a Rigidbody")]
+        public Prop_Health propHealthTemplate;
+        
+        private const int DefaultMaxHealth = 15;
+        private const AttackType DefaultAttackType = AttackType.Blunt;
+        private const float DefaultAttackTypeDamageMultiplier = 0.75f;
+        
         public override void UseIngredient(GameObject targetGameObject) => MakeJoints(targetGameObject);
 
+        public static void ApplyDefaultPropHealthValues(Prop_Health propHealth)
+        {
+            propHealth.RESETABLE = true;
+            propHealth.Pooled = true;
+            propHealth.max_Health = DefaultMaxHealth;
+            propHealth.cur_Health = DefaultMaxHealth;
+            propHealth.damageFromAttack = true;
+            propHealth.damageFromImpact = true;
+            propHealth.mod_Attack = 1;
+            propHealth.mod_Impact = 1;
+            propHealth.thr_Impact = 1;
+            propHealth.mod_Type = DefaultAttackType;
+            propHealth.mod_TypeDamage = DefaultAttackTypeDamageMultiplier;
+        }
+        
         private void MakeJoints(GameObject targetGameObject)
         {
-            var allRbs = targetGameObject.GetComponentsInChildren<Rigidbody>();
+            var allRigidbodies = targetGameObject.GetComponentsInChildren<Rigidbody>();
 
-            foreach (var rb in allRbs)
+            foreach (var rb in allRigidbodies)
             {
                 if (!rb.gameObject.TryGetComponent<JointConnections>(out var jointConnections))
                 {
@@ -55,24 +72,22 @@ namespace FizzSDK.Destruction
                 }
             }
 
-            foreach (var rb in allRbs)
+            foreach (var rb in allRigidbodies)
             {
                 rb.gameObject.AddOrGetComponent<Prop_DamageReceiver>();
 
                 if (!rb.gameObject.TryGetComponent<Prop_Health>(out var propHealth))
                 {
                     propHealth = rb.gameObject.AddComponent<Prop_Health>();
-                    propHealth.RESETABLE = true;
-                    propHealth.Pooled = true;
-                    propHealth.max_Health = maxHealth;
-                    propHealth.damageFromAttack = true;
-                    propHealth.damageFromImpact = true;
-                    propHealth.mod_Attack = 1;
-                    propHealth.mod_Impact = 1;
-                    propHealth.thr_Impact = 1;
-                    propHealth.cur_Health = maxHealth;
-                    propHealth.mod_Type = attackType;
-                    propHealth.mod_TypeDamage = attackTypeDamage;
+                    
+                    if (propHealthTemplate)
+                    {
+                        EditorUtility.CopySerialized(propHealthTemplate, propHealth);
+                    }
+                    else
+                    {
+                        ApplyDefaultPropHealthValues(propHealth);
+                    }
                 }
                 
                 if (!rb.gameObject.TryGetComponent<UltEventHolder>(out var ultEventHolder))
@@ -84,10 +99,7 @@ namespace FizzSDK.Destruction
                 propHealth.BreakEvent ??= new UnityEvent();
 
                 UnityEventTools.AddVoidPersistentListener(propHealth.BreakEvent, ultEventHolder.Invoke);
-
-                #if UNITY_EDITOR
                 EditorUtility.SetDirty(propHealth);
-                #endif
             }
         }
     }

@@ -6828,6 +6828,132 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &2037457422253881239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8353076004936811492}
+  - component: {fileID: 1185026166064382674}
+  m_Layer: 0
+  m_Name: Prop_Health Template
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8353076004936811492
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037457422253881239}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -8.7, y: -11.5, z: -33.694168}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6635103510409091865}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1185026166064382674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037457422253881239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7bd3f2a4fae61045932f98d48850809, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parent: {fileID: 0}
+  RESETABLE: 1
+  Pooled: 1
+  damageFromImpact: 1
+  mod_Impact: 1
+  thr_Impact: 5
+  useMask: 0
+  msk_Impact:
+    serializedVersion: 2
+    m_Bits: 0
+  mod_Minimal: 0
+  damageFromAttack: 1
+  mod_Attack: 1
+  useType: 0
+  mod_Type: 2
+  mod_TypeDamage: 0
+  col_crit: []
+  mod_crit: 0
+  fx_crit: {fileID: 0}
+  max_Health: 15
+  cur_Health: 15
+  req_hit_count: 0
+  hits: 0
+  bloodied: 0
+  per_Bloodied: 0
+  useMaterialChange: 0
+  amt_Regen: 0
+  wait_Regen_t: 0
+  regenerating: 0
+  fx_regen: {fileID: 0}
+  thr_React: 0
+  max_Bits: 0
+  min_Bits: 0
+  spawnHeroProps: 0
+  t_Despawn: 0
+  t_Occlusion: 0
+  useOcclusion: 0
+  use_Explosion: 0
+  drop_Bloodied: 0
+  bloodied_t: 0
+  force_Explosion: 0
+  force_Rotation: 0
+  fx_Explosion: {fileID: 0}
+  fx_Bloodied: {fileID: 0}
+  fx_Death: {fileID: 0}
+  BreakEffectSize: 0
+  rnd_Item: 0
+  rnd_Chance: 0
+  obj_Reward: []
+  fx_Reward: {fileID: 0}
+  prop_Whole: {fileID: 0}
+  chunk_Tracker: {fileID: 0}
+  prop_Damaged: []
+  mat_Damaged: []
+  prop_Bits: []
+  prop_Hero: []
+  clip_bloodied: []
+  BreakEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  blasterDustSpawnable:
+    crateRef:
+      _barcode:
+        _id: null.empty.barcode
+        generated: 1
+      _version: 
+      _palletBarcode:
+        _id: null.empty.barcode
+        generated: 1
+      _editorCrateChanged: 0
+    policyData: {fileID: 0}
+  breakEffectSpawnable:
+    crateRef:
+      _barcode:
+        _id: null.empty.barcode
+        generated: 1
+      _version: 
+      _palletBarcode:
+        _id: null.empty.barcode
+        generated: 1
+      _editorCrateChanged: 0
+    policyData: {fileID: 0}
 --- !u!1 &2895337129830701600
 GameObject:
   m_ObjectHideFlags: 0
@@ -7113,6 +7239,7 @@ Transform:
   m_Children:
   - {fileID: 1575032898863136757}
   - {fileID: 4524305848090223852}
+  - {fileID: 8353076004936811492}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7142,9 +7269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36ba6fbb4e1462143b2291d7759b5ce2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 8
-  attackType: -1
-  attackTypeDamage: 0.75
+  propHealthTemplate: {fileID: 1185026166064382674}
 --- !u!114 &6635103510409091867
 MonoBehaviour:
   m_ObjectHideFlags: 0
