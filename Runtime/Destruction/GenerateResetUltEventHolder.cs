@@ -8,6 +8,7 @@ using SLZ.Props;
 using UltEvents;
 using Unity.VisualScripting;
 using UnityEditor;
+using FizzSDK.Utils;
 using Vector3 = UnityEngine.Vector3;
 
 namespace FizzSDK.Destruction
@@ -24,7 +25,7 @@ namespace FizzSDK.Destruction
         private UltEventHolder FindResetAllUltEventHolder(GameObject parent)
         {
             var holderTransform = parent.transform.Find(outputGameObjectName);
-            if (holderTransform) return holderTransform.GetOrAddComponent<UltEventHolder>();
+            if (holderTransform) return holderTransform.AddOrGetComponent<UltEventHolder>();
 
             var newHolder = new GameObject(outputGameObjectName)
             {

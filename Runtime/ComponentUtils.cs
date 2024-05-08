@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +12,10 @@ namespace FizzSDK.Utils
                 ? outComponent
                 : gameObject.AddComponent<T>();
         }
+        
+        public static T AddOrGetComponent<T>(this Component component) where T : Component
+        {
+            return component.gameObject.AddOrGetComponent<T>();
+        }
     }
 }
-#endif
