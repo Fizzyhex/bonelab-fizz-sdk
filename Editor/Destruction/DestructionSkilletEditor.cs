@@ -71,6 +71,12 @@ namespace FizzSDK.Destruction
                     EditorGUILayout.SelectableLabel($"Last saved to: {myScript.savedPrefabPath}");
                 }
                 
+                if (GUILayout.Button("Generate GameObject in scene"))
+                {
+                    var newGameObject = myScript.SaveDishIntoScene();
+                    Selection.activeGameObject = newGameObject;
+                }
+                
                 if (GUILayout.Button("Save as new Prefab"))
                 {
                     var prefabOutputPath = EditorUtility.SaveFilePanel(

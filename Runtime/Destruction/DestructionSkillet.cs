@@ -37,6 +37,22 @@ namespace FizzSDK.Destruction
             
             return newPrefab;
         }
+
+        public GameObject SaveDishIntoScene()
+        {
+            var newGameObject = Instantiate(targetGameObject);
+            newGameObject.name = $"{targetGameObject.name}_destructible";
+            
+            foreach (var ingredient in ingredients)
+            {
+                ingredient.UseIngredient(newGameObject);
+            }
+            
+            newGameObject.transform.SetPositionAndRotation(targetGameObject.transform.position,
+                targetGameObject.transform.rotation);
+            
+            return newGameObject;
+        }
         
         public void RefreshIngredients()
         {
