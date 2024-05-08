@@ -52,16 +52,23 @@ namespace FizzSDK.Destruction
 
             GUILayout.Label("Save your dish!", EditorStyles.boldLabel);
             
+            var canGenerate = myScript.targetGameObject && myScript.targetGameObject.activeInHierarchy;
+            
             if (!myScript.targetGameObject)
             {
                 EditorGUILayout.HelpBox("A target GameObject must be assigned!", MessageType.Warning);
             }
+
+            if (!myScript.targetGameObject.activeInHierarchy)
+            {
+                EditorGUILayout.HelpBox("The target GameObject is disabled!", MessageType.Warning);
+            }
             
-            using (new EditorGUI.DisabledGroupScope(!myScript.targetGameObject))
+            using (new EditorGUI.DisabledGroupScope(!canGenerate))
             {
                 if (myScript.savedPrefabPath.Length > 0)
                 {
-                    GUILayout.Label($"Last saved to: {myScript.savedPrefabPath}");
+                    EditorGUILayout.SelectableLabel($"Last saved to: {myScript.savedPrefabPath}");
                 }
                 
                 if (GUILayout.Button("Save as new Prefab"))

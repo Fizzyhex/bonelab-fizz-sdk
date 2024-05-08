@@ -19,9 +19,7 @@ namespace FizzSDK.Destruction
 
         private readonly Collider[] _overlapResults = new Collider[10];
 
-        private const float MaxSearchPadding = 0.1f;
-        private const float SearchBoundsMultiplier = 0.1f;
-        private const float RootScaleFactor = 3;
+        private const float SearchPadding = 0.05f;
 
         public override void UseIngredient(GameObject targetGameObject) => MakeJoints(targetGameObject);
 
@@ -80,17 +78,18 @@ namespace FizzSDK.Destruction
             foreach (var rb in allRigidbodies)
             {
                 var rbCollider = rb.gameObject.GetComponent<Collider>();
-                var searchRadius = (rbCollider.bounds.size / 2) + Vector3.Min(
-                    rbCollider.bounds.size * SearchBoundsMultiplier,
-                    new Vector3(MaxSearchPadding, MaxSearchPadding, MaxSearchPadding));
-                Physics.OverlapBoxNonAlloc(rb.worldCenterOfMass, searchRadius, _overlapResults);
 
-                foreach (var hitCollider in _overlapResults)
+                if (!rbCollider)
                 {
-                    if (!hitCollider)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
+                
+                var searchRadius = (rbCollider.bounds.size + (Vector3.one * SearchPadding)) / 2;
+                var size = Physics.OverlapBoxNonAlloc(rb.worldCenterOfMass, searchRadius, _overlapResults, rb.rotation);
+
+                for (var i = 0; i < size; i++)
+                {
+                    var hitCollider = _overlapResults[i];
                     
                     if (hitCollider.gameObject == rb.gameObject)
                     {

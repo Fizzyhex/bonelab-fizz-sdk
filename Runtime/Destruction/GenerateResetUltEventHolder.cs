@@ -16,8 +16,8 @@ namespace FizzSDK.Destruction
     public class GenerateResetUltEventHolder : DestructionIngredient
     {
         [Tooltip("The name of the GameObject that'll hold the UltEventHolder. A new one will be created if it doesn't exist.")]
-        [SerializeField] private string outputGameObjectName = "ResetEverything";
-        [SerializeField] const string rigidbodyResetHolderName = "PoolingReset";
+        public string outputGameObjectName = "ResetEverything";
+        private const string RigidbodyResetHolderName = "PoolingReset";
         
         public override void UseIngredient(GameObject targetGameObject) => GeneratePoolingUltEvent(targetGameObject);
 
@@ -40,12 +40,12 @@ namespace FizzSDK.Destruction
         private UltEventHolder GetResetUltEventHolder(GameObject parent)
         {
             // Search for 'LockUltEventHolder' GameObject under parent
-            var holderTransform = parent.transform.Find(rigidbodyResetHolderName);
+            var holderTransform = parent.transform.Find(RigidbodyResetHolderName);
 
             if (!holderTransform)
             {
                 // create new
-                var newHolder = new GameObject(rigidbodyResetHolderName)
+                var newHolder = new GameObject(RigidbodyResetHolderName)
                 {
                     transform =
                     {

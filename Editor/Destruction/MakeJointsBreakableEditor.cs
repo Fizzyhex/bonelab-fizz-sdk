@@ -42,6 +42,8 @@ namespace FizzSDK.Destruction
                 
                 template.transform.parent = myScript.gameObject.transform;
                 myScript.propHealthTemplate = propHealth;
+                
+                Undo.RegisterCreatedObjectUndo(template, "Generate Prop_Health template");
             }
         }
     }
