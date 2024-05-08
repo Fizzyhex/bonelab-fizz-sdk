@@ -38,6 +38,7 @@ namespace FizzSDK.Destruction
         {
             var colliderHolder = new GameObject(ColliderHolderName)
             {
+                layer = LayerMask.NameToLayer("Interactable"),
                 transform =
                 {
                     parent = parent,
@@ -61,7 +62,7 @@ namespace FizzSDK.Destruction
                 var colliderHolder = colliderHolderTransform
                     ? colliderHolderTransform.gameObject
                     : GenerateColliderHolder(colliderGameObject.transform);
-                
+
                 var gripCollider = colliderHolder.AddOrGetComponent<BoxCollider>();
                 gripCollider.size = refBoxCollider.size;
                 gripCollider.center = refBoxCollider.center;
