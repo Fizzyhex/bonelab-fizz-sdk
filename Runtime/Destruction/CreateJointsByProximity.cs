@@ -17,7 +17,7 @@ namespace FizzSDK.Destruction
         private float breakForce = Mathf.Infinity;
         [SerializeField] private float breakTorque = Mathf.Infinity;
 
-        private readonly Collider[] _overlapResults = new Collider[10];
+        private readonly Collider[] _overlapResults = new Collider[15];
 
         private const float SearchPadding = 0.05f;
 
@@ -97,6 +97,11 @@ namespace FizzSDK.Destruction
                     }
 
                     if (!hitCollider.gameObject.TryGetComponent<Rigidbody>(out var hitRigidbody))
+                    {
+                        continue;
+                    }
+                    
+                    if (allRigidbodies.All(allowedRb => hitCollider.gameObject != allowedRb.gameObject))
                     {
                         continue;
                     }

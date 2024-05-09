@@ -52,16 +52,23 @@ namespace FizzSDK.Destruction
                 }
                 
                 var jointsToBreak = rb.gameObject.GetComponents<ConfigurableJoint>().ToList();
+                var ultEventHolder = rb.gameObject.AddOrGetComponent<UltEventHolder>();
+                
+                UnityAction ourWakeUpAction = rb.WakeUp;
+                ultEventHolder.Event.AddPersistentCall(ourWakeUpAction);
                 
                 foreach (var joint in jointConnections.joints)
                 {
                     if (joint is ConfigurableJoint configJoint)
                     {
                         jointsToBreak.Add(configJoint);
+                        
+                        var jointRb = joint.gameObject.GetComponent<Rigidbody>();
+                        if (!jointRb) continue;
+                        UnityAction action = jointRb.WakeUp;
+                        ultEventHolder.Event.AddPersistentCall(action);
                     }
                 }
-                
-                var ultEventHolder = rb.gameObject.AddOrGetComponent<UltEventHolder>();
 
                 foreach (var joint in jointsToBreak)
                 {

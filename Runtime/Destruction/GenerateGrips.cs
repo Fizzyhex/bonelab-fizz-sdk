@@ -79,10 +79,11 @@ namespace FizzSDK.Destruction
                 boxGrip.rotationPriorityBuffer = 20;
                 
                 boxGrip.isThrowable = true;
-                boxGrip.edgePadding = 1;
+                boxGrip.edgePadding = 0.1f;
                 boxGrip.handleAmplifyCurve = AnimationCurve.Linear(0, 1, 1, 1);
                 
                 boxGrip.sandwichHandPose = HandPoseProvider.GetHandPose("BoxSandwichGrip");
+                boxGrip.canBeSandwichedGrabbed = true;
                 boxGrip.edgeHandPose = HandPoseProvider.GetHandPose("BoxEdgeGrip");
                 boxGrip.edgeHandPoseRadius = 0.05f;
                 boxGrip.canBeEdgeGrabbed = true;

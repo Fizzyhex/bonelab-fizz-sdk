@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using System.Linq;
 using SLZ.VFX;
 using UnityEngine;
 using UnityEditor;
@@ -13,6 +14,28 @@ namespace FizzSDK.Editor.Tools
         
         public override void OnInspectorGUI()
         {
+            var blipScript = (Blip)target;
+            var renderersField = blipScript.GetType().GetField("Renderers", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            
+            if (renderersField != null)
+            {
+                var currentRenderers = (Renderer[])renderersField.GetValue(blipScript);
+                
+                if (currentRenderers == null)
+                {
+                    return;
+                }
+                
+                var hasNullRefs = currentRenderers.Any(renderer => !renderer);
+                
+                if (hasNullRefs)
+                {
+                    EditorGUILayout.HelpBox(
+                        "[FizzSDK] There's missing renderers in your renderers field! This may break the script. You should remove them.",
+                        MessageType.Warning);
+                }
+            }
+            
             DrawDefaultInspector();
 
             _showTools = EditorGUILayout.Foldout(_showTools, "Fizz SDK");
@@ -25,10 +48,9 @@ namespace FizzSDK.Editor.Tools
             
             EditorGUILayout.EndHorizontal();
             
-            var blipScript = (Blip)target;
+            
             var renderers = _rendererContainer.GetComponentsInChildren<Renderer>();
-
-            var renderersField = blipScript.GetType().GetField("Renderers", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            
             if (renderersField == null) return;
             renderersField.SetValue(blipScript, renderers);
             
