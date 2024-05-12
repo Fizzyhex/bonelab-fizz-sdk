@@ -6,6 +6,7 @@ using UnityEngine;
 
 using FizzSDK.Utils;
 using System.Linq;
+using UnityEngine.Serialization;
 
 namespace FizzSDK.Destruction
 {
@@ -16,6 +17,7 @@ namespace FizzSDK.Destruction
         [SerializeField]
         private float breakForce = Mathf.Infinity;
         [SerializeField] private float breakTorque = Mathf.Infinity;
+        [SerializeField] private bool enableCollision = true;
 
         private readonly Collider[] _overlapResults = new Collider[15];
 
@@ -48,6 +50,9 @@ namespace FizzSDK.Destruction
 
             joint.breakForce = breakForce;
             joint.breakTorque = breakTorque;
+            
+            // enable collision between connected bodies
+            joint.enableCollision = enableCollision;
         }
 
         private List<GameObject> GetRootGameObjects(List<Rigidbody> rbs)

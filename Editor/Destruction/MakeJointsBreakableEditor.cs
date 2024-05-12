@@ -33,6 +33,8 @@ namespace FizzSDK.Destruction
             
             DrawDefaultInspector();
 
+            EditorGUILayout.Space(10);
+            
             if (GUILayout.Button("Generate Prop_Health template"))
             {
                 var template = new GameObject("Prop_Health Template");

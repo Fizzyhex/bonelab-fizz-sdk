@@ -121,6 +121,14 @@ namespace FizzSDK.Destruction
                 var sleepMethod = typeof(Rigidbody).GetMethod("Sleep", new Type[] {});
                 var sleepDelegate = Delegate.CreateDelegate(typeof(Action), rb, sleepMethod);
                 ultEventHolder.Event.AddPersistentCall(sleepDelegate);
+
+                // re-kinematic
+                if (rb.isKinematic)
+                {
+                    var setIsKinematicMethod = typeof(Rigidbody).GetMethod("set_isKinematic", new Type[] { typeof(bool) });
+                    var setIsKinematicDelegate = Delegate.CreateDelegate(typeof(Action<bool>), rb, setIsKinematicMethod);
+                    ultEventHolder.Event.AddPersistentCall(setIsKinematicDelegate).SetArguments(true);
+                }
             }
             
             return ultEventHolder;

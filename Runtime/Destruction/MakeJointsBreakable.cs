@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -18,6 +19,12 @@ namespace FizzSDK.Destruction
     {
         [Tooltip("Template for Prop_Health component to be added to all objects with a Rigidbody")]
         public Prop_Health propHealthTemplate;
+
+        [Header("Optimisation")]
+        [Tooltip("If true, all rigidbodies will become kinematic")]
+        public bool makeEverythingKinematic = false;
+        [Tooltip("If true, objects will have kinematic disabled when damaged")]
+        public bool kinematicUntilDamaged = false;
         
         private const int DefaultMaxHealth = 15;
         private const AttackType DefaultAttackType = AttackType.Blunt;
@@ -46,6 +53,11 @@ namespace FizzSDK.Destruction
 
             foreach (var rb in allRigidbodies)
             {
+                if (makeEverythingKinematic)
+                {
+                    rb.isKinematic = true;
+                }
+                
                 if (!rb.gameObject.TryGetComponent<JointConnections>(out var jointConnections))
                 {
                     continue;
@@ -56,6 +68,13 @@ namespace FizzSDK.Destruction
                 
                 UnityAction ourWakeUpAction = rb.WakeUp;
                 ultEventHolder.Event.AddPersistentCall(ourWakeUpAction);
+
+                if (kinematicUntilDamaged)
+                {
+                    var setIsKinematicMethod = typeof(Rigidbody).GetMethod("set_isKinematic", new[] {typeof(bool)});
+                    var setIsKinematicDelegate = Delegate.CreateDelegate(typeof(Action<bool>), rb, setIsKinematicMethod);
+                    ultEventHolder.Event.AddPersistentCall(setIsKinematicDelegate).SetArguments(false);
+                }
                 
                 foreach (var joint in jointConnections.joints)
                 {
@@ -67,6 +86,13 @@ namespace FizzSDK.Destruction
                         if (!jointRb) continue;
                         UnityAction action = jointRb.WakeUp;
                         ultEventHolder.Event.AddPersistentCall(action);
+
+                        if (kinematicUntilDamaged)
+                        {
+                            var setIsKinematicMethod = typeof(Rigidbody).GetMethod("set_isKinematic", new[] {typeof(bool)});
+                            var setIsKinematicDelegate = Delegate.CreateDelegate(typeof(Action<bool>), jointRb, setIsKinematicMethod);
+                            ultEventHolder.Event.AddPersistentCall(setIsKinematicDelegate).SetArguments(false);
+                        }
                     }
                 }
 
