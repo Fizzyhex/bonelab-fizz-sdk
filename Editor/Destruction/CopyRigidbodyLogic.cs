@@ -3,16 +3,16 @@ using UnityEditor;
 
 namespace FizzSDK.Destruction
 {
-    [CustomEditor(typeof(CopyRigidbodyLogic))]
-    public class CopyRigidbodyLogicEditor : UnityEditor.Editor
+    [CustomEditor(typeof(CopyUltLogic))]
+    public class CopyUltLogicEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             EditorGUILayout.HelpBox(
-                "This script takes in a template Rigidbody with logic underneath it and copies it across to all other Rigidbodies.",
+                "This script takes in a template with UltEvent logic in a GameObject underneath it, and copies it across to all other GameObjects with updated references.",
                 MessageType.Info);
             
-            var myScript = (CopyRigidbodyLogic)target;
+            var myScript = (CopyUltLogic)target;
 
             if (myScript.template && myScript.template.transform.childCount > 1)
             {

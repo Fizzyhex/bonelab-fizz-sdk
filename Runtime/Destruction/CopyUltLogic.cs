@@ -7,7 +7,7 @@ using UnityEngine;
 namespace FizzSDK.Destruction
 {
     [AddComponentMenu("FizzSDK/Destruction Toolkit/Copy Logic")]
-    public class CopyRigidbodyLogic : DestructionIngredient
+    public class CopyUltLogic : DestructionIngredient
     {
         public GameObject template;
         [Tooltip("Optional - leave as none to copy to all game objects")]
@@ -18,18 +18,19 @@ namespace FizzSDK.Destruction
             foreach (var call in ultEvent.PersistentCallsList)
             {
                 // Replace references to logicRoot with logicTo
-                if (call.Target is not Component targetComponent) continue;
+                var targetComponent = call.Target as Component;
                     
-                if (targetComponent.gameObject != from)
+                if (targetComponent && targetComponent.gameObject != from)
                 {
                     continue;
                 }
-                        
-                var newC = to.GetComponent(call.Target.GetType());
-                        
-                // use reflection to change _Target as it's private
+
+                var callTargetType = call.Target.GetType();
+                object newValue = callTargetType == typeof(GameObject) ? to : to.GetComponent(callTargetType);
+                
+                // Use reflection to change _Target as it's private
                 var field = call.GetType().GetField("_Target", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                field.SetValue(call, newC);
+                field.SetValue(call, newValue);
             }
         }
         
@@ -66,8 +67,10 @@ namespace FizzSDK.Destruction
 
         public override void UseIngredient(GameObject targetGameObject)
         {
-            foreach (var copyToGameObject in targetGameObject.GetComponentsInChildren<GameObject>())
+            foreach (var copyTransform in targetGameObject.GetComponentsInChildren<Transform>())
             {
+                var copyToGameObject = copyTransform.gameObject;
+                
                 if (tagFilter && !copyToGameObject.gameObject.HasFizzTag(tagFilter))
                 {
                     continue;
