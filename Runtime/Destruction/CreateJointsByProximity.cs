@@ -14,8 +14,9 @@ namespace FizzSDK.Destruction
     public class CreateJointsByProximity : DestructionIngredient
     {
         [Header("Configurable Joint Settings")]
-        [SerializeField]
-        private float breakForce = Mathf.Infinity;
+        [Tooltip("An optional template ConfigurableJoint to copy the fields from.")]
+        public ConfigurableJoint templateJoint; 
+        [SerializeField] private float breakForce = Mathf.Infinity;
         [SerializeField] private float breakTorque = Mathf.Infinity;
         [SerializeField] private bool enableCollision = true;
 
@@ -53,6 +54,11 @@ namespace FizzSDK.Destruction
             
             // enable collision between connected bodies
             joint.enableCollision = enableCollision;
+
+            if (templateJoint != null)
+            {
+                EditorUtility.CopySerialized(templateJoint, joint);
+            }
         }
 
         private List<GameObject> GetRootGameObjects(List<Rigidbody> rbs)
@@ -113,10 +119,6 @@ namespace FizzSDK.Destruction
 
                     var joint = rb.gameObject.AddComponent<ConfigurableJoint>();
 
-                    joint.anchor = rb.transform.InverseTransformPoint(hitCollider.ClosestPoint(rb.worldCenterOfMass));
-                    joint.axis = Vector3.zero;
-                    joint.connectedBody = hitRigidbody;
-
                     var jointConnections = hitRigidbody.GetComponent<JointConnections>();
 
                     if (jointConnections)
@@ -139,6 +141,10 @@ namespace FizzSDK.Destruction
                     EditorUtility.SetDirty(joint);
 
                     ConfigureJoint(joint);
+                    
+                    joint.anchor = rb.transform.InverseTransformPoint(hitCollider.ClosestPoint(rb.worldCenterOfMass));
+                    joint.axis = Vector3.zero;
+                    joint.connectedBody = hitRigidbody;
                 }
             }
         }

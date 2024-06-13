@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Linq;
+using FizzSDK.Tags;
 using UnityEngine;
 using UnityEngine.Events;
 using SLZ.Props;
@@ -11,19 +12,28 @@ using SLZ.Bonelab;
 
 using UnityEditor;
 using FizzSDK.Utils;
+using SLZ.Marrow.Pool;
+using SLZ.Marrow.Warehouse;
+using SLZ.VFX;
+using UnityEngine.Serialization;
+using Object = System.Object;
 
 namespace FizzSDK.Destruction
 {
     [AddComponentMenu("FizzSDK/Destruction Toolkit/Make Joints Breakable")]
     public class MakeJointsBreakable : DestructionIngredient
     {
-        [Tooltip("Template for Prop_Health component to be added to all objects with a Rigidbody")]
-        public Prop_Health propHealthTemplate;
+        [FormerlySerializedAs("propHealthTemplate")]
+        [Tooltip("Template for ObjectDestructible component to be added to all objects with a Rigidbody.")]
+        public ObjectDestructible objectDestructibleTemplate;
+        
+        [Tooltip("(Optional) Only objects with this tag will have joints made breakable. Leave as none to effect all rigidbodies.")]
+        public DataCard tagFilter;
 
         [Header("Optimisation")]
-        [Tooltip("If true, all rigidbodies will become kinematic")]
+        [Tooltip("If true, all rigidbodies will become kinematic.")]
         public bool makeEverythingKinematic = false;
-        [Tooltip("If true, objects will have kinematic disabled when damaged")]
+        [Tooltip("If true, objects will have kinematic disabled when damaged.")]
         public bool kinematicUntilDamaged = false;
         
         private const int DefaultMaxHealth = 15;
@@ -32,24 +42,31 @@ namespace FizzSDK.Destruction
         
         public override void UseIngredient(GameObject targetGameObject) => MakeJoints(targetGameObject);
 
-        public static void ApplyDefaultPropHealthValues(Prop_Health propHealth)
+        public static void ApplyDefaultValues(ObjectDestructible objectDestructible)
         {
-            propHealth.RESETABLE = true;
-            propHealth.Pooled = true;
-            propHealth.max_Health = DefaultMaxHealth;
-            propHealth.cur_Health = DefaultMaxHealth;
-            propHealth.damageFromAttack = true;
-            propHealth.damageFromImpact = true;
-            propHealth.mod_Attack = 1;
-            propHealth.mod_Impact = 1;
-            propHealth.thr_Impact = 1;
-            propHealth.mod_Type = DefaultAttackType;
-            propHealth.mod_TypeDamage = DefaultAttackTypeDamageMultiplier;
+            objectDestructible.maxHealth = DefaultMaxHealth;
+            objectDestructible.reqHitCount = 1;
+            objectDestructible.damageFromAttack = true;
+            objectDestructible.damageFromImpact = true;
+            objectDestructible.attackMod = 1;
+            objectDestructible.modImpact = 1;
+            objectDestructible.thrImpact = 1;
+            objectDestructible.attackType = DefaultAttackType;
+            objectDestructible.modTypeDamage = DefaultAttackTypeDamageMultiplier;
+            
+            var healthField = typeof(ObjectDestructible).GetField("_health", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            healthField.SetValue(objectDestructible, DefaultMaxHealth);
         }
         
         private void MakeJoints(GameObject targetGameObject)
         {
             var allRigidbodies = targetGameObject.GetComponentsInChildren<Rigidbody>();
+            var poolee = targetGameObject.GetComponentInParent<Poolee>();
+            
+            if (tagFilter)
+            {
+                allRigidbodies = allRigidbodies.Where(rb => rb.gameObject.HasFizzTag(tagFilter)).ToArray();
+            }
 
             foreach (var rb in allRigidbodies)
             {
@@ -107,20 +124,24 @@ namespace FizzSDK.Destruction
 
             foreach (var rb in allRigidbodies)
             {
-                rb.gameObject.AddOrGetComponent<Prop_DamageReceiver>();
-
-                if (!rb.gameObject.TryGetComponent<Prop_Health>(out var propHealth))
+                if (!rb.gameObject.TryGetComponent<ObjectDestructible>(out var objectDestructible))
                 {
-                    propHealth = rb.gameObject.AddComponent<Prop_Health>();
+                    objectDestructible = rb.gameObject.AddComponent<ObjectDestructible>();
                     
-                    if (propHealthTemplate)
+                    if (objectDestructibleTemplate)
                     {
-                        EditorUtility.CopySerialized(propHealthTemplate, propHealth);
+                        EditorUtility.CopySerialized(objectDestructibleTemplate, objectDestructible);
                     }
                     else
                     {
-                        ApplyDefaultPropHealthValues(propHealth);
+                        ApplyDefaultValues(objectDestructible);
                     }
+
+                    var pooleeField = typeof(ObjectDestructible).GetField("_poolee", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    pooleeField.SetValue(objectDestructible, poolee);
+                    
+                    var rbField = typeof(ObjectDestructible).GetField("_rb", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    rbField.SetValue(objectDestructible, rb);
                 }
                 
                 if (!rb.gameObject.TryGetComponent<UltEventHolder>(out var ultEventHolder))
@@ -128,13 +149,12 @@ namespace FizzSDK.Destruction
                     continue;
                 }
                 
-                // FUTURE: Swap out references to the Prop_Health's GameObject to allow custom logic on the BreakEvent?
+                // FUTURE: Swap out references to the Object Destructible's GameObject to allow custom logic on the BreakEvent?
 
-                // :(
-                propHealth.BreakEvent ??= new UnityEvent();
+                objectDestructible.OnDestruct ??= new UnityEvent();
 
-                UnityEventTools.AddVoidPersistentListener(propHealth.BreakEvent, ultEventHolder.Invoke);
-                EditorUtility.SetDirty(propHealth);
+                UnityEventTools.AddVoidPersistentListener(objectDestructible.OnDestruct, ultEventHolder.Invoke);
+                EditorUtility.SetDirty(objectDestructible);
             }
         }
     }

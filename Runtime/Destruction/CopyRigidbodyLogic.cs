@@ -1,14 +1,17 @@
 ﻿#if UNITY_EDITOR
-using System.Linq;
+using FizzSDK.Tags;
+using SLZ.Marrow.Warehouse;
 using UltEvents;
 using UnityEngine;
 
 namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Destruction Toolkit/Copy Rigidbody Logic")]
+    [AddComponentMenu("FizzSDK/Destruction Toolkit/Copy Logic")]
     public class CopyRigidbodyLogic : DestructionIngredient
     {
         public GameObject template;
+        [Tooltip("Optional - leave as none to copy to all game objects")]
+        public DataCard tagFilter;
 
         private static void UltEventReferenceSwap(UltEventBase ultEvent, GameObject from, GameObject to)
         {
@@ -63,9 +66,14 @@ namespace FizzSDK.Destruction
 
         public override void UseIngredient(GameObject targetGameObject)
         {
-            foreach (var rb in targetGameObject.GetComponentsInChildren<Rigidbody>())
+            foreach (var copyToGameObject in targetGameObject.GetComponentsInChildren<GameObject>())
             {
-                CopyLogic(template, rb.gameObject);
+                if (tagFilter && !copyToGameObject.gameObject.HasFizzTag(tagFilter))
+                {
+                    continue;
+                }
+                
+                CopyLogic(template, copyToGameObject);
             }
         }
     }

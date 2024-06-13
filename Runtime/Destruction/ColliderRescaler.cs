@@ -1,68 +1,46 @@
 ﻿#if UNITY_EDITOR
 using System.Numerics;
+using FizzSDK.Tags;
+using SLZ.Marrow.Warehouse;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
 namespace FizzSDK.Destruction
 {
-    internal struct ColliderInfo
-    {
-        public Vector3 Center;
-        public Vector3 Size;
-    }
-    
     [AddComponentMenu("FizzSDK/Destruction Toolkit/Collider Rescaler")]
-    public class ColliderRescaler : RigidbodyLogicBehaviour
+    public class ColliderRescaler : DestructionIngredient
     {
         [SerializeField] private Vector3 sizeMultiplier = new(1, 1, 1);
-
-        private ColliderInfo GetColliderInfo(GameObject subject)
-        {
-            var boxCollider = subject.GetComponent<BoxCollider>();
-
-            if (boxCollider)
-            {
-                return new ColliderInfo
-                {
-                    Center = boxCollider.center,
-                    Size = boxCollider.size
-                };
-            }
-            
-            var meshCollider = subject.GetComponent<MeshCollider>();
-            
-            if (meshCollider)
-            {
-                return new ColliderInfo
-                {
-                    Center = Vector3.zero,
-                    Size = meshCollider.bounds.size
-                };
-            }
-            
-            return new ColliderInfo
-            {
-                Center = Vector3.zero,
-                Size = Vector3.zero
-            };
-        }
+        [SerializeField] private DataCard _tagFilter;
         
-        public override void RunLogic(GameObject root)
+        public override void UseIngredient(GameObject targetGameObject)
         {
-            var colliderInfo = GetColliderInfo(root);
-            var colliders = gameObject.GetComponents<BoxCollider>();
+            var colliders = targetGameObject.GetComponentsInChildren<Collider>();
 
             foreach (var targetCollider in colliders)
             {
-                var scale = root.transform.localScale;
-                var newScale = new Vector3(
-                    colliderInfo.Size.x * sizeMultiplier.x,
-                    colliderInfo.Size.y * sizeMultiplier.y,
-                    colliderInfo.Size.z * sizeMultiplier.z
-                );
-
-                targetCollider.center = colliderInfo.Center;
-                targetCollider.size = newScale;
+                if (_tagFilter && !targetCollider.gameObject.HasFizzTag(_tagFilter))
+                {
+                    continue;
+                }
+                
+                if (targetCollider is BoxCollider boxCollider)
+                {
+                    boxCollider.size = new Vector3(
+                        boxCollider.size.x * sizeMultiplier.x,
+                        boxCollider.size.y * sizeMultiplier.y,
+                        boxCollider.size.z * sizeMultiplier.z
+                    );
+                }
+                else if (targetCollider is SphereCollider sphereCollider)
+                {
+                    sphereCollider.radius *= sizeMultiplier.x;
+                }
+                else if (targetCollider is CapsuleCollider capsuleCollider)
+                {
+                    capsuleCollider.radius *= sizeMultiplier.x;
+                    capsuleCollider.height *= sizeMultiplier.y;
+                }
             }
         }
     }

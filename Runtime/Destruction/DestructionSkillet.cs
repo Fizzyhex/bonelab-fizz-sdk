@@ -10,13 +10,16 @@ namespace FizzSDK.Destruction
     [AddComponentMenu("FizzSDK/Destruction Toolkit/Destruction Skillet")]
     public class DestructionSkillet : MonoBehaviour
     {
-        [SerializeField] private List<DestructionIngredient> ingredients = new();
         [Tooltip("The GameObject that will be saved as a prefab with added ingredients.")]
         public GameObject targetGameObject;
+        
         [Tooltip("If true, ingredients will be added when in play mode for testing purposes.")]
+        
         [SerializeField] private bool cookAtRuntime = false;
         
         [HideInInspector] public string savedPrefabPath = "";
+
+        [SerializeField] public List<DestructionIngredient> ingredients = new();
         
         public GameObject SaveDishToPrefab(string prefabPath)
         {

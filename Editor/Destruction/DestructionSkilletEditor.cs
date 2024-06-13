@@ -38,31 +38,35 @@ namespace FizzSDK.Destruction
             }
             
             DrawDefaultInspector();
-
-            GUILayout.Space(10);
-
-            if (GUILayout.Button("Refresh ingredients"))
-            {
-                RefreshIngredients();
-            }
-            
-            GUILayout.Space(10);
             
             var myScript = (DestructionSkillet)target;
-
-            GUILayout.Label("Save your dish!", EditorStyles.boldLabel);
             
             var canGenerate = myScript.targetGameObject && myScript.targetGameObject.activeInHierarchy;
             
             if (!myScript.targetGameObject)
             {
                 EditorGUILayout.HelpBox("A target GameObject must be assigned!", MessageType.Warning);
+                return;
             }
 
             if (!myScript.targetGameObject.activeInHierarchy)
             {
                 EditorGUILayout.HelpBox("The target GameObject is disabled!", MessageType.Warning);
             }
+            
+            if (myScript.ingredients.Count < myScript.gameObject.GetComponents<DestructionIngredient>().Length)
+            {
+                EditorGUILayout.HelpBox("Some ingredients are missing from the skillet! Click 'Refresh ingredients' to add them.", MessageType.Warning);
+            }
+            
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            
+            if (GUILayout.Button("Refresh ingredients"))
+            {
+                RefreshIngredients();
+            }
+            
+            GUILayout.Label("Save your dish!", EditorStyles.boldLabel);
             
             using (new EditorGUI.DisabledGroupScope(!canGenerate))
             {
@@ -104,6 +108,7 @@ namespace FizzSDK.Destruction
                     var prefab = myScript.SaveDishToPrefab(prefabOutputPath);
                     AssetDatabase.Refresh();
                     myScript.savedPrefabPath = prefabOutputPath;
+                    EditorUtility.SetDirty(myScript);
                     Debug.Log($"Saved dish to prefab: {myScript.savedPrefabPath}");
                 }
 
@@ -115,6 +120,8 @@ namespace FizzSDK.Destruction
                     }
                 }
             }
+            
+            EditorGUILayout.EndVertical();
         }
     }
 }

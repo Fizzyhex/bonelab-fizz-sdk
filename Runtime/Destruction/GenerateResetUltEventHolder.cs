@@ -1,14 +1,10 @@
 ﻿#if UNITY_EDITOR
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using FizzSDK.Utils;
 using SLZ.Bonelab;
-using SLZ.Props;
 using UltEvents;
-using Unity.VisualScripting;
-using UnityEditor;
-using FizzSDK.Utils;
+using SLZ.VFX;
 using Vector3 = UnityEngine.Vector3;
 
 namespace FizzSDK.Destruction
@@ -84,19 +80,23 @@ namespace FizzSDK.Destruction
             var setRotationCall = ultEventHolder.Event.AddPersistentCall(setRotationDelegate);
             setRotationCall.SetArguments(parent.transform.localRotation);
             
-            var propHealth = parent.AddOrGetComponent<Prop_Health>();
+            var objectDestructible = parent.AddOrGetComponent<ObjectDestructible>();
 
-            if (propHealth)
+            if (objectDestructible)
             {
                 // reset health
-                var receiveHealMethod = typeof(Prop_Health).GetMethod("ReceiveHeal", new Type[] { typeof(float) });
-                var receiveHealDelegate = Delegate.CreateDelegate(typeof(Action<float>), propHealth, receiveHealMethod);
-                var receiveHealCall = ultEventHolder.Event.AddPersistentCall(receiveHealDelegate);
-                receiveHealCall.SetArguments(propHealth.max_Health);
+                //var receiveHealMethod = typeof(ObjectDestructible).GetMethod("SendDamage", new Type[] { typeof(float) });
+                //var receiveHealDelegate = Delegate.CreateDelegate(typeof(Action<float>), objectDestructible, receiveHealMethod);
+                //var receiveHealCall = ultEventHolder.Event.AddPersistentCall(receiveHealDelegate);
+                //receiveHealCall.SetArguments(-objectDestructible.maxHealth);
+                
+                var resetMethod = typeof(ObjectDestructible).GetMethod("Reset");
+                var resetMethodDelegate = Delegate.CreateDelegate(typeof(Action), objectDestructible, resetMethod);
+                ultEventHolder.Event.AddPersistentCall(resetMethodDelegate);
                 
                 // re-enable script
                 var enableHealthMethod = typeof(Behaviour).GetMethod("set_enabled", new Type[] { typeof(bool) });
-                var enableHealthDelegate = Delegate.CreateDelegate(typeof(Action<bool>), propHealth, enableHealthMethod);
+                var enableHealthDelegate = Delegate.CreateDelegate(typeof(Action<bool>), objectDestructible, enableHealthMethod);
                 var enableHealthCall = ultEventHolder.Event.AddPersistentCall(enableHealthDelegate);
                 enableHealthCall.SetArguments(true);
             }

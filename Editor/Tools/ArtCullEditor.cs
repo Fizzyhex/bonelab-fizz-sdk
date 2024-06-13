@@ -1,25 +1,26 @@
 ﻿#if UNITY_EDITOR
 using System.Linq;
 using SLZ.Bonelab;
+using SLZ.Marrow.Interaction;
 using UnityEngine;
 using UnityEditor;
 
 namespace FizzSDK.Editor.Tools
 {
-    [CustomEditor(typeof(Blip))]
-    public class BlipEditor : UnityEditor.Editor
+    [CustomEditor(typeof(ArtCull))]
+    public class ArtCullEditor : UnityEditor.Editor
     {
         private bool _showTools = false;
         private GameObject _rendererContainer;
         
         public override void OnInspectorGUI()
         {
-            var blipScript = (Blip)target;
-            var renderersField = blipScript.GetType().GetField("Renderers", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var artCullScript = (ArtCull)target;
+            var renderersField = artCullScript.GetType().GetField("_renderers", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             
             if (renderersField != null)
             {
-                var currentRenderers = (Renderer[])renderersField.GetValue(blipScript);
+                var currentRenderers = (Renderer[])renderersField.GetValue(artCullScript);
                 
                 if (currentRenderers == null)
                 {
@@ -51,9 +52,9 @@ namespace FizzSDK.Editor.Tools
             var renderers = _rendererContainer.GetComponentsInChildren<Renderer>();
             
             if (renderersField == null) return;
-            renderersField.SetValue(blipScript, renderers);
+            renderersField.SetValue(artCullScript, renderers);
             
-            EditorUtility.SetDirty(blipScript);
+            EditorUtility.SetDirty(artCullScript);
         }
         
     }

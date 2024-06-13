@@ -1,8 +1,10 @@
 ﻿#if UNITY_EDITOR
 using FizzSDK.Runtime;
+using FizzSDK.Tags;
 using SLZ.Interaction;
 using UnityEngine;
 using FizzSDK.Utils;
+using SLZ.Marrow.Warehouse;
 
 namespace FizzSDK.Destruction
 {
@@ -11,11 +13,11 @@ namespace FizzSDK.Destruction
     {
         // :((((
         
-        private const BoxGrip.Faces allFaces = BoxGrip.Faces.NegativeX | BoxGrip.Faces.NegativeY |
+        private const BoxGrip.Faces AllFaces = BoxGrip.Faces.NegativeX | BoxGrip.Faces.NegativeY |
                                                BoxGrip.Faces.NegativeZ | BoxGrip.Faces.PositiveX |
                                                BoxGrip.Faces.PositiveY | BoxGrip.Faces.PositiveZ;
 
-        private const BoxGrip.Edges allEdges = BoxGrip.Edges.NegativeXNegativeY | BoxGrip.Edges.NegativeXNegativeZ |
+        private const BoxGrip.Edges AllEdges = BoxGrip.Edges.NegativeXNegativeY | BoxGrip.Edges.NegativeXNegativeZ |
                                                BoxGrip.Edges.NegativeXPositiveY | BoxGrip.Edges.NegativeXPositiveZ |
                                                BoxGrip.Edges.NegativeYNegativeZ | BoxGrip.Edges.NegativeYPositiveZ |
                                                BoxGrip.Edges.NegativeYPositiveZ | BoxGrip.Edges.PositiveXNegativeY |
@@ -23,7 +25,7 @@ namespace FizzSDK.Destruction
                                                BoxGrip.Edges.PositiveXPositiveZ | BoxGrip.Edges.PositiveYNegativeZ |
                                                BoxGrip.Edges.PositiveYPositiveZ;
         
-        private const BoxGrip.Corners allCorners = BoxGrip.Corners.NegativeXNegativeYNegativeZ |
+        private const BoxGrip.Corners AllCorners = BoxGrip.Corners.NegativeXNegativeYNegativeZ |
                                                    BoxGrip.Corners.NegativeXNegativeYPositiveZ |
                                                    BoxGrip.Corners.NegativeXPositiveYNegativeZ |
                                                    BoxGrip.Corners.NegativeXPositiveYPositiveZ |
@@ -34,11 +36,14 @@ namespace FizzSDK.Destruction
 
         private const string ColliderHolderName = "GeneratedGrip";
         
-        private GameObject GenerateColliderHolder(Transform parent)
+        [Tooltip("(Optional) Only objects with this tag will have grips added. Leave as none to add to everything.")]
+        public DataCard tagFilter;
+        
+        private static GameObject GenerateColliderHolder(Transform parent)
         {
             var colliderHolder = new GameObject(ColliderHolderName)
             {
-                layer = LayerMask.NameToLayer("Interactable"),
+                layer = LayerMask.NameToLayer("Interacable"),
                 transform =
                 {
                     parent = parent,
@@ -56,6 +61,7 @@ namespace FizzSDK.Destruction
             foreach (var refBoxCollider in targetGameObject.GetComponentsInChildren<BoxCollider>())
             {
                 if (refBoxCollider.isTrigger) continue;
+                if (tagFilter && targetGameObject.HasFizzTag(tagFilter)) continue;
                 
                 var colliderGameObject = refBoxCollider.gameObject;
                 var colliderHolderTransform = colliderGameObject.transform.Find(ColliderHolderName);
@@ -85,32 +91,37 @@ namespace FizzSDK.Destruction
                 boxGrip.sandwichHandPose = HandPoseProvider.GetHandPose("BoxSandwichGrip");
                 boxGrip.canBeSandwichedGrabbed = true;
                 boxGrip.edgeHandPose = HandPoseProvider.GetHandPose("BoxEdgeGrip");
-                boxGrip.edgeHandPoseRadius = 0.05f;
+                boxGrip.edgeHandPoseRadius = 0.1f;
                 boxGrip.canBeEdgeGrabbed = true;
                 boxGrip.cornerHandPose = HandPoseProvider.GetHandPose("BoxCornerGrip");
-                boxGrip.cornerHandPoseRadius = 0.05f;
+                boxGrip.cornerHandPoseRadius = 0.1f;
                 boxGrip.canBeCornerGrabbed = true;
                 boxGrip.faceHandPose = HandPoseProvider.GetHandPose("BoxFaceGrip");
                 boxGrip.faceHandPoseRadius = 1;
                 boxGrip.canBeFaceGrabbed = true;
 
-                boxGrip.enabledFaces = allFaces;
-                boxGrip.enabledEdges = allEdges;
-                boxGrip.enabledCorners = allCorners;
+                boxGrip.enabledFaces = AllFaces;
+                boxGrip.enabledEdges = AllEdges;
+                boxGrip.enabledCorners = AllCorners;
 
                 boxGrip.minBreakForce = 1000;
                 boxGrip.maxBreakForce = 2000;
                 boxGrip.defaultGripDistance = float.PositiveInfinity;
                 
-                // did they make these private out of spite??
+                // did they make these private out of spite of me??
+                // patch 4 update: still private... :(
                 
-                var forceGrabFaceField = boxGrip.GetType().GetField("forceGrabFace", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var forceGrabFaceField = boxGrip.GetType().GetField("forceGrabFace",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                
                 if (forceGrabFaceField != null)
                 {
                     forceGrabFaceField.SetValue(boxGrip, BoxGrip.Faces.NegativeX);
                 }
                 
-                var forceGrabTopField = boxGrip.GetType().GetField("forceGrabTop", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var forceGrabTopField = boxGrip.GetType().GetField("forceGrabTop",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                
                 if (forceGrabTopField != null)
                 {
                     forceGrabTopField.SetValue(boxGrip, BoxGrip.Faces.PositiveY);
