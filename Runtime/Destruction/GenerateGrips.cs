@@ -38,6 +38,14 @@ namespace FizzSDK.Destruction
         
         [Tooltip("(Optional) Only objects with this tag will have grips added. Leave as none to add to everything.")]
         public DataCard tagFilter;
+
+        [Tooltip("If true, inactive objects will have grips added.")]
+        public bool includeInactive = false;
+
+        [Header("Grip Settings")]
+        public float cornerRadius = 0.1f;
+        public float faceRadius = 1;
+        public bool canBeFaceGrabbed = true;
         
         private static GameObject GenerateColliderHolder(Transform parent)
         {
@@ -58,10 +66,10 @@ namespace FizzSDK.Destruction
         
         public override void UseIngredient(GameObject targetGameObject)
         {
-            foreach (var refBoxCollider in targetGameObject.GetComponentsInChildren<BoxCollider>())
+            foreach (var refBoxCollider in targetGameObject.GetComponentsInChildren<BoxCollider>(includeInactive))
             {
                 if (refBoxCollider.isTrigger) continue;
-                if (tagFilter && targetGameObject.HasFizzTag(tagFilter)) continue;
+                if (tagFilter && !refBoxCollider.gameObject.HasFizzTag(tagFilter)) continue;
                 
                 var colliderGameObject = refBoxCollider.gameObject;
                 var colliderHolderTransform = colliderGameObject.transform.Find(ColliderHolderName);
@@ -85,20 +93,20 @@ namespace FizzSDK.Destruction
                 boxGrip.rotationPriorityBuffer = 20;
                 
                 boxGrip.isThrowable = true;
-                boxGrip.edgePadding = 0.1f;
+                boxGrip.edgePadding = cornerRadius;
                 boxGrip.handleAmplifyCurve = AnimationCurve.Linear(0, 1, 1, 1);
                 
                 boxGrip.sandwichHandPose = HandPoseProvider.GetHandPose("BoxSandwichGrip");
                 boxGrip.canBeSandwichedGrabbed = true;
                 boxGrip.edgeHandPose = HandPoseProvider.GetHandPose("BoxEdgeGrip");
-                boxGrip.edgeHandPoseRadius = 0.1f;
+                boxGrip.edgeHandPoseRadius = cornerRadius;
                 boxGrip.canBeEdgeGrabbed = true;
                 boxGrip.cornerHandPose = HandPoseProvider.GetHandPose("BoxCornerGrip");
-                boxGrip.cornerHandPoseRadius = 0.1f;
+                boxGrip.cornerHandPoseRadius = cornerRadius;
                 boxGrip.canBeCornerGrabbed = true;
                 boxGrip.faceHandPose = HandPoseProvider.GetHandPose("BoxFaceGrip");
-                boxGrip.faceHandPoseRadius = 1;
-                boxGrip.canBeFaceGrabbed = true;
+                boxGrip.faceHandPoseRadius = faceRadius;
+                boxGrip.canBeFaceGrabbed = canBeFaceGrabbed;
 
                 boxGrip.enabledFaces = AllFaces;
                 boxGrip.enabledEdges = AllEdges;

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FizzSDK.Destruction
 {
-    [AddComponentMenu("FizzSDK/Destruction Toolkit/Copy Logic")]
+    [AddComponentMenu("FizzSDK/Destruction Toolkit/Copy Ult Logic")]
     public class CopyUltLogic : DestructionIngredient
     {
         public GameObject template;
