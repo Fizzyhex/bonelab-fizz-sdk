@@ -84,6 +84,8 @@ namespace FizzSDK.Destruction
                 
                 var boxGrip = colliderHolder.AddOrGetComponent<BoxGrip>();
 
+                boxGrip.targetTransform = colliderHolder.transform;
+
                 boxGrip.primaryMovementAxis = new Vector3(0, 0, 1);
                 boxGrip.secondaryMovementAxis = Vector3.up;
 
