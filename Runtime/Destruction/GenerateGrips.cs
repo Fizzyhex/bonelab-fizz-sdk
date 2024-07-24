@@ -1,9 +1,9 @@
 ﻿#if UNITY_EDITOR
 using FizzSDK.Runtime;
 using FizzSDK.Tags;
-using SLZ.Interaction;
 using UnityEngine;
 using FizzSDK.Utils;
+using SLZ.Marrow;
 using SLZ.Marrow.Warehouse;
 
 namespace FizzSDK.Destruction
@@ -109,6 +109,10 @@ namespace FizzSDK.Destruction
                 boxGrip.faceHandPose = HandPoseProvider.GetHandPose("BoxFaceGrip");
                 boxGrip.faceHandPoseRadius = faceRadius;
                 boxGrip.canBeFaceGrabbed = canBeFaceGrabbed;
+
+                boxGrip.faceHandPoseRadius = 0;
+                boxGrip.edgeHandPoseRadius = 0;
+                boxGrip.cornerHandPoseRadius = 0;
 
                 boxGrip.enabledFaces = AllFaces;
                 boxGrip.enabledEdges = AllEdges;

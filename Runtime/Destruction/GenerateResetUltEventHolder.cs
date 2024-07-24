@@ -3,8 +3,8 @@ using System;
 using UnityEngine;
 using FizzSDK.Utils;
 using SLZ.Bonelab;
+using SLZ.Marrow;
 using UltEvents;
-using SLZ.VFX;
 using Vector3 = UnityEngine.Vector3;
 
 namespace FizzSDK.Destruction
